@@ -9,4 +9,4 @@ fi
 # chemins
 source ./scripts/config.sh
 
-java evenements.Main $*
+java -jar java/Evenements/dist/Evenements.jar $*
