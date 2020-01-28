@@ -116,6 +116,31 @@ class BaseDeDonnees {
         executerRequete("INSERT INTO salle (nom)"
                 + " VALUES (\"" + echapper(salle.nom) + "\")",
                 "Erreur lors de l'importation d'une salle");
+        Integer.parseInt(donneesSalle.get("Xhautgauche")),
+                    Integer.parseInt(donneesSalle.get("Yhautgauche")),
+                    Integer.parseInt(donneesSalle.get("Largeur")),
+                    Integer.parseInt(donneesSalle.get("Hauteur")),
+                    donneesSalle.get("Etage")
+
+executerRequete("INSERT INTO etage (nom)"
+                + " VALUES (\"" + echapper(salle.etage) + "\")",
+                "Erreur lors de l'importation d'une salle");
+executerRequete("INSERT INTO salle (xhautgauche)"
+                + " VALUES (\"" + salle.Xhautgauche + "\")",
+                "Erreur lors de l'importation d'une salle");
+        executerRequete("INSERT INTO salle (yhautgauche)"
+                + " VALUES (\"" + salle.Yhautgauche + "\")",
+                "Erreur lors de l'importation d'une salle");
+        executerRequete("INSERT INTO salle (largeur)"
+                + " VALUES (\"" + salle.largeur + "\")",
+                "Erreur lors de l'importation d'une salle");
+        executerRequete("INSERT INTO salle (hauteur)"
+                + " VALUES (\"" + salle.hauteur + "\")",
+                "Erreur lors de l'importation d'une salle");
+        executerRequete("INSERT INTO salle (etage_id)"
+                + " VALUES (\"" + "(SELECT id FROM etage)" + "\")",
+                "Erreur lors de l'importation d'une salle");
+        System.out.println("OK");
     }
 
     /**
