@@ -56,8 +56,13 @@ public class Generateur {
     static String listeSallesHtml(String evenement) {
         String sallesHtml = "<ul>";
 
-        for (Salle salle : BaseDeDonnees.obtenirSalles()) {
-            sallesHtml += "<li>" + salle.nom + "</li>";
+        for (String e : BaseDeDonnees.obtenirSallesParEtages().keySet()) {
+            sallesHtml += "<li>" + e + "</li>";
+            sallesHtml += "<ul>";
+            for (Salle s : BaseDeDonnees.obtenirSallesParEtages().get(e)) {
+                sallesHtml += "<li>" + s.nom + "</li>";
+            }
+            sallesHtml += "</ul>";
         }
         
         sallesHtml += "</ul>";

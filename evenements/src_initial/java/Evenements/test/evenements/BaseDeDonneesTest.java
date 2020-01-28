@@ -16,25 +16,27 @@ public class BaseDeDonneesTest {
 
     @Test
     public void testImportSalle() {
-        BaseDeDonnees.vider();
-        Salle salleTest = new Salle("test", 12, 45, 56, 78, "RDC");
-        BaseDeDonnees.importerSalle(salleTest);
+        if (Jalon.jalon == 1) {
+            BaseDeDonnees.vider();
+            Salle salleTest = new Salle("test", 12, 45, 56, 78, "RDC");
+            BaseDeDonnees.importerSalle(salleTest);
 
-        ArrayList<Salle> salles = BaseDeDonnees.obtenirSalles();
+            ArrayList<Salle> salles = BaseDeDonnees.obtenirSalles();
 
-        assertEquals("Une salle insérée", 1, salles.size());
+            assertEquals("Une salle insérée", 1, salles.size());
 
-        if (salles.size() == 1) {
-            Salle salle = salles.get(0);
+            if (salles.size() == 1) {
+                Salle salle = salles.get(0);
 
-            assertEquals("Nom de la salle inséré", "test", salle.nom);
+                assertEquals("Nom de la salle inséré", "test", salle.nom);
 
-            if (Jalon.jalon >= Jalon.JALON_SALLES_ETAGES) {
-                assertEquals("Coordonnées de la salle insérée", 12, salle.Xhautgauche);
-                assertEquals("Coordonnées de la salle insérée", 45, salle.Yhautgauche);
-                assertEquals("Coordonnées de la salle insérée", 56, salle.largeur);
-                assertEquals("Coordonnées de la salle insérée", 78, salle.hauteur);
-                assertEquals("Étage de la salle insérée", "RDC", salle.etage);
+                if (Jalon.jalon >= Jalon.JALON_SALLES_ETAGES) {
+                    assertEquals("Coordonnées de la salle insérée", 12, salle.Xhautgauche);
+                    assertEquals("Coordonnées de la salle insérée", 45, salle.Yhautgauche);
+                    assertEquals("Coordonnées de la salle insérée", 56, salle.largeur);
+                    assertEquals("Coordonnées de la salle insérée", 78, salle.hauteur);
+                    assertEquals("Étage de la salle insérée", "RDC", salle.etage);
+                }
             }
         }
     }

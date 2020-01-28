@@ -77,23 +77,25 @@ class BaseDeDonnees {
      * @param nom le nom de l'étage
      */
     static void importerEtage(String nom) {
-        throw new UnsupportedOperationException("A implémenter");
+        executerRequete("INSERT INTO etage (nom)"
+                + " VALUES (\"" + echapper(nom) + "\")",
+                "Erreur lors de l'importation d'un étage");
     }
 
     /**
      * Trouve l'id d'un étage dont le nom est donné
      */
     static int idDeLetage(String nom) {
-        throw new UnsupportedOperationException("A implémenter");
+        return trouverId("etage", "etage.nom", nom);
     }
 
     /**
      * Trouve l'ID d'une salle
      */
     static int idDeLaSalle(String nom) {
-        throw new UnsupportedOperationException("A implémenter");
+        return trouverId("salle", "salle.nom", nom);
     }
-    
+
     /**
      * Trouver l'ID d'un événement
      */
@@ -106,41 +108,24 @@ class BaseDeDonnees {
      * importé dans la base puis son id est retournée
      */
     static int importerOuTrouverEtage(String nom) {
-        throw new UnsupportedOperationException("A implémenter");
+
+        if (idDeLetage(nom) == 0) {
+            importerEtage(nom);
+        }
+        return idDeLetage(nom);
     }
 
     /**
      * Importe les salles fournie en argument dans la base
      */
     static void importerSalle(Salle salle) {
-        executerRequete("INSERT INTO salle (nom)"
-                + " VALUES (\"" + echapper(salle.nom) + "\")",
-                "Erreur lors de l'importation d'une salle");
-        Integer.parseInt(donneesSalle.get("Xhautgauche")),
-                    Integer.parseInt(donneesSalle.get("Yhautgauche")),
-                    Integer.parseInt(donneesSalle.get("Largeur")),
-                    Integer.parseInt(donneesSalle.get("Hauteur")),
-                    donneesSalle.get("Etage")
 
-executerRequete("INSERT INTO etage (nom)"
-                + " VALUES (\"" + echapper(salle.etage) + "\")",
+        System.out.println("INSERT INTO salle (nom,xhautgauche,yhautgauche,largeur,hauteur,etage_id)"
+                + " VALUES (\"" + echapper(salle.nom) + "\"" + "," + salle.Xhautgauche + "," + salle.Yhautgauche + "," + salle.largeur + "," + salle.hauteur + "," + importerOuTrouverEtage(salle.etage) + ")");
+        executerRequete("INSERT INTO salle (nom,xhautgauche,yhautgauche,largeur,hauteur,etage_id)"
+                + " VALUES (\"" + echapper(salle.nom) + "\"" + "," + salle.Xhautgauche + "," + salle.Yhautgauche + "," + salle.largeur + "," + salle.hauteur + "," + importerOuTrouverEtage(salle.etage) + ")",
                 "Erreur lors de l'importation d'une salle");
-executerRequete("INSERT INTO salle (xhautgauche)"
-                + " VALUES (\"" + salle.Xhautgauche + "\")",
-                "Erreur lors de l'importation d'une salle");
-        executerRequete("INSERT INTO salle (yhautgauche)"
-                + " VALUES (\"" + salle.Yhautgauche + "\")",
-                "Erreur lors de l'importation d'une salle");
-        executerRequete("INSERT INTO salle (largeur)"
-                + " VALUES (\"" + salle.largeur + "\")",
-                "Erreur lors de l'importation d'une salle");
-        executerRequete("INSERT INTO salle (hauteur)"
-                + " VALUES (\"" + salle.hauteur + "\")",
-                "Erreur lors de l'importation d'une salle");
-        executerRequete("INSERT INTO salle (etage_id)"
-                + " VALUES (\"" + "(SELECT id FROM etage)" + "\")",
-                "Erreur lors de l'importation d'une salle");
-        System.out.println("OK");
+
     }
 
     /**
@@ -165,16 +150,16 @@ executerRequete("INSERT INTO salle (xhautgauche)"
 
         try {
             Statement stmt = connexion.createStatement();
-            ResultSet results = stmt.executeQuery("SELECT * FROM salle");
+            ResultSet results = stmt.executeQuery("SELECT * FROM salle INNER JOIN etage ON etage.id=salle.etage_id");
 
             while (results.next()) {
                 Salle salle = new Salle(
-                        results.getString("nom"),
-                        0,
-                        0,
-                        0,
-                        0,
-                        null
+                        results.getString("salle.nom"),
+                        results.getInt("xhautgauche"),
+                        results.getInt("yhautgauche"),
+                        results.getInt("largeur"),
+                        results.getInt("hauteur"),
+                        results.getString("etage.nom")
                 );
                 salles.add(salle);
             }
@@ -182,10 +167,9 @@ executerRequete("INSERT INTO salle (xhautgauche)"
         } catch (SQLException e) {
             e.printStackTrace(System.err);
             throw new IllegalArgumentException("Impossible d'obtenir la liste des"
-                    + "salles");
+                    + " salles");
 
         }
-
         return salles;
     }
 
@@ -193,7 +177,41 @@ executerRequete("INSERT INTO salle (xhautgauche)"
      * Obtiens les salles de la base de données, et les regroupe par étage
      */
     static HashMap<String, ArrayList<Salle>> obtenirSallesParEtages() {
-        throw new UnsupportedOperationException("A implémenter");
+        HashMap<String, ArrayList<Salle>> SalleParEtage = new HashMap<>();
+        
+        try {
+            Statement stmt = connexion.createStatement();
+            ResultSet results = stmt.executeQuery("SELECT etage.nom, salle.* FROM salle INNER JOIN etage ON etage.id=salle.etage_id");
+
+            while (results.next()) {
+                
+                Salle salle = new Salle(
+                        results.getString("salle.nom"),
+                        Integer.parseInt(results.getString("xhautgauche")),
+                        Integer.parseInt(results.getString("yhautgauche")),
+                        Integer.parseInt(results.getString("largeur")),
+                        Integer.parseInt(results.getString("hauteur")),
+                        results.getString("etage.nom")
+                );
+                
+                if (!SalleParEtage.containsKey(results.getString("etage.nom"))) {
+                    SalleParEtage.put(results.getString("etage.nom"), new ArrayList<>());
+                    SalleParEtage.get(results.getString("etage.nom")).add(salle);
+                } else {
+                    SalleParEtage.get(results.getString("etage.nom")).add(salle);
+                }
+
+            }
+            System.out.println(SalleParEtage);
+            stmt.close();
+        } catch (SQLException e) {
+            e.printStackTrace(System.err);
+            throw new IllegalArgumentException("Impossible d'obtenir la liste des"
+                    + " salles par étage");
+
+        }
+
+        return SalleParEtage;
     }
 
     /**
