@@ -132,7 +132,16 @@ class BaseDeDonnees {
      * Importe la séance donnée en argument dans la base
      */
     static void importerSeance(Seance seance) {
-        throw new UnsupportedOperationException("A implémenter");
+        System.out.println(" INSERT INTO seance (titre,description,dateDebut,dateFin,type,promotion,evenement_id)"
+                + " VALUES (\"" + echapper(seance.titre) + "\"" + "," + "\"" + echapper(seance.description) + "\""
+                + "," + "\"" + Seance.dateVersChaineAvecHeure(seance.dateDebut) + "\"" + "," + "\"" + Seance.dateVersChaineAvecHeure(seance.dateFin) + "\"" + ","
+                + "\"" + echapper(seance.type) + "\"" + "," + "\"" + echapper(seance.promotion) + "\"" + "," + "\"" +  seance.idEvenement + "\")");
+        executerRequete("INSERT INTO seance (titre,description,dateDebut,dateFin,type,promotion,evenement_id)"
+                + " VALUES (\"" + echapper(seance.titre) + "\"" + "," + "\"" + echapper(seance.description) + "\""
+                + "," + "\"" + Seance.dateVersChaineAvecHeure(seance.dateDebut) + "\"" + "," + "\"" + Seance.dateVersChaineAvecHeure(seance.dateFin) + "\"" + ","
+                + "\"" + echapper(seance.type) + "\"" + "," + "\"" + echapper(seance.promotion) + "\"" + "," + "\"" +  seance.idEvenement + "\")",
+                "Erreur lors de l'importation d'une salle");
+
     }
 
     /**
@@ -178,13 +187,13 @@ class BaseDeDonnees {
      */
     static HashMap<String, ArrayList<Salle>> obtenirSallesParEtages() {
         HashMap<String, ArrayList<Salle>> SalleParEtage = new HashMap<>();
-        
+
         try {
             Statement stmt = connexion.createStatement();
             ResultSet results = stmt.executeQuery("SELECT etage.nom, salle.* FROM salle INNER JOIN etage ON etage.id=salle.etage_id");
 
             while (results.next()) {
-                
+
                 Salle salle = new Salle(
                         results.getString("salle.nom"),
                         Integer.parseInt(results.getString("xhautgauche")),
@@ -193,7 +202,7 @@ class BaseDeDonnees {
                         Integer.parseInt(results.getString("hauteur")),
                         results.getString("etage.nom")
                 );
-                
+
                 if (!SalleParEtage.containsKey(results.getString("etage.nom"))) {
                     SalleParEtage.put(results.getString("etage.nom"), new ArrayList<>());
                     SalleParEtage.get(results.getString("etage.nom")).add(salle);
@@ -226,7 +235,29 @@ class BaseDeDonnees {
      * "seance.evenement_id = 4"
      */
     static ArrayList<Seance> obtenirSeancesContrainte(String contrainte) {
-        throw new UnsupportedOperationException("A implémenter");
+        ArrayList<Seance> listSeance = new ArrayList<>();
+        try {
+            Statement stmt = connexion.createStatement();
+            ResultSet results = stmt.executeQuery("SELECT * FROM seance WHERE " + contrainte);
+            
+            while (results.next()) {
+                Seance seance = new Seance(
+                        results.getString("titre"), results.getString("description"),
+                        Seance.chaineVersDate(results.getString("dateDebut")), Seance.chaineVersDate(results.getString("dateFin")),
+                        results.getString("type"), 
+                        null,
+                        results.getString("promotion"),
+                        results.getInt("evenement_id"));
+                
+                listSeance.add(seance);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace(System.err);
+            throw new IllegalArgumentException("Impossible d'obtenir la liste des seances");
+
+        }
+
+        return listSeance;
     }
 
     /**
