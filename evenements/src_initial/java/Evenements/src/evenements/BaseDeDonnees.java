@@ -8,8 +8,6 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
-import javafx.util.Pair;
 
 /**
  * Connexion à la base de données
@@ -91,9 +89,9 @@ class BaseDeDonnees {
      * Trouve l'ID d'une salle
      */
     static int idDeLaSalle(String nom) {
-        throw new UnsupportedOperationException("A implémenter");
+        return trouverId("salle", "nom", nom);
     }
-    
+
     /**
      * Trouver l'ID d'un événement
      */
@@ -129,7 +127,9 @@ class BaseDeDonnees {
      * Importe un événement passé en paramètre dans la base
      */
     static void importerEvenement(Evenement evenement) {
-        throw new UnsupportedOperationException("A implémenter");
+        executerRequete("INSERT INTO evenement (nomcourt, nom, description)"
+                + " VALUES ('" + echapper(evenement.nomCourt) + "," + echapper(evenement.nom) + "," + echapper(evenement.description)+ "')",
+                "Erreur lors de l'importation d'une evenement");
     }
 
     /**
@@ -206,7 +206,29 @@ class BaseDeDonnees {
      * Obtenir tous les événements depuis la base de données
      */
     static ArrayList<Evenement> obtenirEvenements() {
-        throw new UnsupportedOperationException("A implémenter");
+        ArrayList<Evenement> Event = new ArrayList<>();
+
+        try {
+            Statement stmt = connexion.createStatement();
+            ResultSet results = stmt.executeQuery("SELECT * FROM evenement");
+
+            while (results.next()) {
+                Evenement event = new Evenement(
+                        results.getString("nomCourt"),
+                        results.getString("nom"),
+                        results.getString("description")
+                );
+                Event.add(event);
+            }
+            stmt.close();
+        } catch (SQLException e) {
+            e.printStackTrace(System.err);
+            throw new IllegalArgumentException("Impossible d'obtenir la liste des"
+                    + "evenements");
+
+        }
+
+        return Event;
     }
 
     /**
@@ -298,5 +320,9 @@ class BaseDeDonnees {
      */
     static String echapper(String chaine) {
         return chaine.replaceAll("'", "''");
+    }
+
+    private static void executerRequete(String string) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }
