@@ -54,22 +54,49 @@ public class Generateur {
      * Retourne le code HTML qui affiche les salles
      */
     static String listeSallesHtml(String evenement) {
-        String sallesHtml = "<ul>";
+        if (evenement == null) {
+            String sallesHtml = "<ul>";
 
-        for (Salle salle : BaseDeDonnees.obtenirSalles()) {
-            sallesHtml += "<li>" + salle.nom + "</li>";
+            for (String e : BaseDeDonnees.obtenirSallesParEtages().keySet()) {
+                sallesHtml += "<li>" + e + "</li>";
+                sallesHtml += "<ul>";
+                for (Salle s : BaseDeDonnees.obtenirSallesParEtages().get(e)) {
+                    sallesHtml += "<li>" + s.nom + "</li>";
+                }
+                sallesHtml += "</ul>";
+            }
+
+            sallesHtml += "</ul>";
+
+            return sallesHtml;
+        } else {
+            String planHtml = "<div class=\"etage\">";
+            for (String e : BaseDeDonnees.obtenirSallesParEtages().keySet()) {
+                planHtml += "<div class=\"etage_" + e + "\">";
+                planHtml += "<p>Etage : " + e + "</p>";
+                planHtml += "<img src=\"imgs/plan/" + e + ".png\" alt=\"" + e + "\" style=\" height:auto; width:;\">";
+                for (Salle s : BaseDeDonnees.obtenirSallesParEtages().get(e)) {
+                    int y = s.Yhautgauche / 6;
+                    int x = s.Xhautgauche / 6;
+                    int l = s.largeur / 6;
+                    int h = s.hauteur / 6;
+                    planHtml += "<a href=\"salle.html\" style=\"top: "
+                            + y + "px; left: " + x + "px; height: "
+                            + h + "px; width: "
+                            + l + "px;\">" + s.nom + "</a>";
+                }
+                planHtml += "</div>";
+            }
+            planHtml += "</div>";
+            return planHtml;
         }
-        
-        sallesHtml += "</ul>";
-
-        return sallesHtml;
     }
 
     /**
      * Génère la page du plan
      */
     static void genererPlan() {
-        valeursMotsCles.put("[[SALLES]]", listeSallesHtml(null));
+        valeursMotsCles.put("[[SALLES]]", listeSallesHtml("truc"));
         traiterTemplate("plan.html");
     }
 

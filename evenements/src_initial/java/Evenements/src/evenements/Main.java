@@ -16,11 +16,12 @@ public class Main {
         for (HashMap<String, String> donneesSalle : csv.donnees) {
             Salle salle = new Salle(
                     donneesSalle.get("Nom"),
-                    0,
-                    0,
-                    0,
-                    0,
-                    null
+                    Integer.parseInt(donneesSalle.get("Xhautgauche")),
+                    Integer.parseInt(donneesSalle.get("Yhautgauche")),
+                    Integer.parseInt(donneesSalle.get("Largeur")),
+                    Integer.parseInt(donneesSalle.get("Hauteur")),
+                    donneesSalle.get("Etage")
+
             );
             BaseDeDonnees.importerSalle(salle);
         }
