@@ -119,9 +119,6 @@ class BaseDeDonnees {
      * Importe les salles fournie en argument dans la base
      */
     static void importerSalle(Salle salle) {
-
-        System.out.println("INSERT INTO salle (nom,xhautgauche,yhautgauche,largeur,hauteur,etage_id)"
-                + " VALUES (\"" + echapper(salle.nom) + "\"" + "," + salle.Xhautgauche + "," + salle.Yhautgauche + "," + salle.largeur + "," + salle.hauteur + "," + importerOuTrouverEtage(salle.etage) + ")");
         executerRequete("INSERT INTO salle (nom,xhautgauche,yhautgauche,largeur,hauteur,etage_id)"
                 + " VALUES (\"" + echapper(salle.nom) + "\"" + "," + salle.Xhautgauche + "," + salle.Yhautgauche + "," + salle.largeur + "," + salle.hauteur + "," + importerOuTrouverEtage(salle.etage) + ")",
                 "Erreur lors de l'importation d'une salle");
@@ -202,7 +199,6 @@ class BaseDeDonnees {
                 }
 
             }
-            System.out.println(SalleParEtage);
             stmt.close();
         } catch (SQLException e) {
             e.printStackTrace(System.err);
