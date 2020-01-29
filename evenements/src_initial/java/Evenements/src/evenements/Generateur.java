@@ -112,7 +112,32 @@ public class Generateur {
      * esthétique
      */
     static String seancesVersHtmlFormate(ArrayList<Seance> seances) {
-        String seance_Html = "";
+        String seance_Html = "<h1> Liste des séances de la la salle XXX"; // A compléter
+        seance_Html += "<div class=\"salle\">";
+        seance_Html += "<div class=\"nav_date\">";
+        seance_Html += "<p>" + "date" + "</p>"; // completer avec la récupération le la date actuelle
+        seance_Html += "<a href=\"salle.html\"><imgs/right.png alt=\"rght\"</a>"; // accès à la page du jour suivant
+        seance_Html += "<a href=\"salle.html\" id=\"auj\">aujourd'hui</a>"; // retour à la page courante de la salle
+        seance_Html += "</div>"; // fin class nav_salle
+        seance_Html += "<div class=\"planning\">";
+        seance_Html += "<div class=\"seance\" style=\"\""; // à mettre en realtion avec les séances il faut surement faire un for eatch
+        seance_Html += ""; // ajouter le titre de la séance
+        seance_Html += "<div class=\"description\">";
+        seance_Html += "<p>" + "" + "</p>"; // description de la séance import de la base
+        seance_Html += "<p>" + "" + "</p>"; // promotion de la séance import de la base
+        seance_Html += "</div>"; // fin class description
+        seance_Html += "<p>" + "" + "</p>"; // ajout de l'horaire de la séance
+        seance_Html += "</div>"; // fin class seance
+        seance_Html += "<div class=\"horaire\"";
+        for (int i = 8; i <= 17; i++) {
+            seance_Html += "<div class=\"echelle\">";
+            seance_Html += i + ":00";
+            seance_Html += "<hr>";
+            seance_Html += "</div>"; // fin class echelle
+        }
+        seance_Html += "</div>"; // fin class horaire
+        seance_Html += "</div>"; // fin class planning
+        seance_Html += "</div>";
         return seance_Html;
     }
 
