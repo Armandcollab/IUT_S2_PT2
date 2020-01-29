@@ -114,6 +114,8 @@ public class Generateur {
     static String seancesVersHtmlFormate(ArrayList<Seance> seances) {
         String seance_Html = "<h1> Liste des séances de la la salle XXX"; // A compléter
         for (Seance s : seances) {
+            String[] tab_Deb = Seance.dateVersHeure(s.dateDebut).split(":");
+            String[] tab_Fin = Seance.dateVersHeure(s.dateFin).split(":");
             seance_Html += "<div class=\"salle\">";
             seance_Html += "<div class=\"nav_date\">";
             seance_Html += "<p>" + "date" + "</p>"; // completer avec la récupération le la date actuelle
@@ -121,8 +123,8 @@ public class Generateur {
             seance_Html += "<a href=\"salle-XXX.html\" id=\"auj\">aujourd'hui</a>"; // retour à la page courante de la salle
             seance_Html += "</div>"; // fin class nav_salle
             seance_Html += "<div class=\"planning\">";
-            int top = (8 - s.dateDebut) * 10 + (8 - s.dateDebut);  //  placement séance en %
-            int height = (s.dateFin - s.dateDebut) * 10 + 10; // taille de la séance en %
+            int top = (8 - Integer.parseInt(tab_Deb[0])) * 10 + (8 - Integer.parseInt(tab_Deb[0]));  //  placement séance en %
+            int height = (Integer.parseInt(tab_Fin[0]) - Integer.parseInt(tab_Deb[0])) * 10 + 10; // taille de la séance en %
             seance_Html += "<div class=\"seance\" style=\"top:" + top + "; height:" + height + ";\""; // dessin des séances
             seance_Html += "<h2>" + s.titre + "</h2>"; // ajouter le titre de la séance
             seance_Html += "<div class=\"description\">";
@@ -130,8 +132,9 @@ public class Generateur {
             seance_Html += "<p>" + s.type + "</p>";
             seance_Html += "<p>" + s.promotion + "</p>"; // promotion de la séance import de la base
             seance_Html += "</div>"; // fin class description
-             // ajout de l'horaire de la séance A faire: convertion de la date en Heure
-            seance_Html += "<p>" + s.dateDebut + "-->" + s.dateFin + "</p>";
+            // ajout de l'horaire de la séance A faire: convertion de la date en Heure
+            seance_Html += "<p>" + Seance.dateVersHeure(s.dateDebut)
+                    + "-->" + Seance.dateVersHeure(s.dateFin) + "</p>";
             seance_Html += "</div>"; // fin class seance
             seance_Html += "<div class=\"horaire\"";
             for (int i = 8; i <= 17; i++) {
