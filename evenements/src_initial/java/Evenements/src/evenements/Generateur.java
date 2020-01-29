@@ -57,12 +57,10 @@ public class Generateur {
         String sallesHtml = "<ul>";
 
         for (String e : BaseDeDonnees.obtenirSallesParEtages().keySet()) {
-            sallesHtml += "<li>" + e + "</li>";
-            sallesHtml += "<ul>";
+            sallesHtml += "<h1 style=\"color: red\">" + e + "</h1>";
             for (Salle s : BaseDeDonnees.obtenirSallesParEtages().get(e)) {
                 sallesHtml += "<li>" + s.nom + "</li>";
             }
-            sallesHtml += "</ul>";
         }
         
         sallesHtml += "</ul>";
