@@ -120,7 +120,7 @@ public class Generateur {
         seance_Html += "<a href=\"salle.html\" id=\"auj\">aujourd'hui</a>"; // retour à la page courante de la salle
         seance_Html += "</div>"; // fin class nav_salle
         seance_Html += "<div class=\"planning\">";
-        seance_Html += "<div class=\"seance\" style=\"\""; // à mettre en realtion avec les séances il faut surement faire un for eatch
+        seance_Html += "<div class=\"seance\" style=\"top:; height:;\""; // à mettre en realtion avec les séances il faut surement faire un for eatch
         seance_Html += ""; // ajouter le titre de la séance
         seance_Html += "<div class=\"description\">";
         seance_Html += "<p>" + "" + "</p>"; // description de la séance import de la base
