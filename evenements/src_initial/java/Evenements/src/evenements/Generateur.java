@@ -112,7 +112,8 @@ public class Generateur {
      * esthétique
      */
     static String seancesVersHtmlFormate(ArrayList<Seance> seances) {
-        throw new UnsupportedOperationException("A implémenter");
+        String seance_Html = "";
+        return seance_Html;
     }
 
     /**
