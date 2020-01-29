@@ -75,21 +75,24 @@ class BaseDeDonnees {
      * @param nom le nom de l'étage
      */
     static void importerEtage(String nom) {
-        throw new UnsupportedOperationException("A implémenter");
+        executerRequete("INSERT INTO etage (nom)"
+                + " VALUES (\"" + echapper(nom) + "\")",
+                "Erreur lors de l'importation d'un étage");
     }
 
     /**
      * Trouve l'id d'un étage dont le nom est donné
      */
     static int idDeLetage(String nom) {
-        throw new UnsupportedOperationException("A implémenter");
+        return trouverId("etage", "etage.nom", nom);
     }
 
     /**
      * Trouve l'ID d'une salle
      */
     static int idDeLaSalle(String nom) {
-        return trouverId("salle", "nom", nom);
+
+        return trouverId("salle", "salle.nom", nom);
     }
 
     /**
@@ -100,36 +103,63 @@ class BaseDeDonnees {
     }
 
     /**
+     * Trouver l'ID d'une séance
+     */
+    static int idDeLaSeance(String titre) {
+        return trouverId("seance", "titre", titre);
+    }
+
+    /**
      * Cherche un étage dans la base, si il existe le retourne, sinon il est
      * importé dans la base puis son id est retournée
      */
     static int importerOuTrouverEtage(String nom) {
-        throw new UnsupportedOperationException("A implémenter");
+
+        if (idDeLetage(nom) == 0) {
+            importerEtage(nom);
+        }
+        return idDeLetage(nom);
     }
 
     /**
      * Importe les salles fournie en argument dans la base
      */
     static void importerSalle(Salle salle) {
-        executerRequete("INSERT INTO salle (nom)"
-                + " VALUES (\"" + echapper(salle.nom) + "\")",
+        executerRequete("INSERT INTO salle (nom,xhautgauche,yhautgauche,largeur,hauteur,etage_id)"
+                + " VALUES (\"" + echapper(salle.nom) + "\"" + "," + salle.Xhautgauche + "," + salle.Yhautgauche + "," + salle.largeur + "," + salle.hauteur + "," + importerOuTrouverEtage(salle.etage) + ")",
                 "Erreur lors de l'importation d'une salle");
+
     }
 
     /**
      * Importe la séance donnée en argument dans la base
      */
     static void importerSeance(Seance seance) {
-        throw new UnsupportedOperationException("A implémenter");
+        if (seance.idEvenement == null) {
+            executerRequete("INSERT INTO seance (titre,description,dateDebut,dateFin,type,promotion)"
+                    + " VALUES (\"" + echapper(seance.titre) + "\"" + "," + "\"" + echapper(seance.description) + "\""
+                    + "," + "\"" + Seance.dateVersChaineAvecHeure(seance.dateDebut) + "\"" + "," + "\"" + Seance.dateVersChaineAvecHeure(seance.dateFin) + "\"" + ","
+                    + "\"" + echapper(seance.type) + "\"" + "," + "\"" + echapper(seance.promotion) + "\")", "Erreur lors de l'importation d'une salle");
+        } else {
+            executerRequete("INSERT INTO seance (titre,description,dateDebut,dateFin,type,promotion,evenement_id)"
+                    + " VALUES (\"" + echapper(seance.titre) + "\"" + "," + "\"" + echapper(seance.description) + "\""
+                    + "," + "\"" + Seance.dateVersChaineAvecHeure(seance.dateDebut) + "\"" + "," + "\"" + Seance.dateVersChaineAvecHeure(seance.dateFin) + "\"" + ","
+                    + "\"" + echapper(seance.type) + "\"" + "," + "\"" + echapper(seance.promotion) + "\"" + "," + "\"" + seance.idEvenement + "\")",
+                    "Erreur lors de l'importation d'une salle");
+        }
+        for (String salle : seance.salles) {
+            executerRequete("INSERT INTO salle_seance (salle_id, seance_id)"
+                    + " VALUES (\"" + idDeLaSalle(salle) + "\"" + "," + "\"" + idDeLaSeance(seance.titre) + "\")",
+                    "Erreur lors de l'importation d'une salle");
+        }
+
     }
 
     /**
      * Importe un événement passé en paramètre dans la base
      */
     static void importerEvenement(Evenement evenement) {
-        executerRequete("INSERT INTO evenement (nomcourt, nom, description)"
-                + " VALUES ('" + echapper(evenement.nomCourt) + "," + echapper(evenement.nom) + "," + echapper(evenement.description)+ "')",
-                "Erreur lors de l'importation d'une evenement");
+        throw new UnsupportedOperationException("A implémenter");
     }
 
     /**
@@ -140,16 +170,16 @@ class BaseDeDonnees {
 
         try {
             Statement stmt = connexion.createStatement();
-            ResultSet results = stmt.executeQuery("SELECT * FROM salle");
+            ResultSet results = stmt.executeQuery("SELECT * FROM salle INNER JOIN etage ON etage.id=salle.etage_id");
 
             while (results.next()) {
                 Salle salle = new Salle(
-                        results.getString("nom"),
-                        0,
-                        0,
-                        0,
-                        0,
-                        null
+                        results.getString("salle.nom"),
+                        results.getInt("xhautgauche"),
+                        results.getInt("yhautgauche"),
+                        results.getInt("largeur"),
+                        results.getInt("hauteur"),
+                        results.getString("etage.nom")
                 );
                 salles.add(salle);
             }
@@ -157,10 +187,9 @@ class BaseDeDonnees {
         } catch (SQLException e) {
             e.printStackTrace(System.err);
             throw new IllegalArgumentException("Impossible d'obtenir la liste des"
-                    + "salles");
+                    + " salles");
 
         }
-
         return salles;
     }
 
@@ -168,7 +197,40 @@ class BaseDeDonnees {
      * Obtiens les salles de la base de données, et les regroupe par étage
      */
     static HashMap<String, ArrayList<Salle>> obtenirSallesParEtages() {
-        throw new UnsupportedOperationException("A implémenter");
+        HashMap<String, ArrayList<Salle>> SalleParEtage = new HashMap<>();
+
+        try {
+            Statement stmt = connexion.createStatement();
+            ResultSet results = stmt.executeQuery("SELECT etage.nom, salle.* FROM salle INNER JOIN etage ON etage.id=salle.etage_id");
+
+            while (results.next()) {
+
+                Salle salle = new Salle(
+                        results.getString("salle.nom"),
+                        Integer.parseInt(results.getString("xhautgauche")),
+                        Integer.parseInt(results.getString("yhautgauche")),
+                        Integer.parseInt(results.getString("largeur")),
+                        Integer.parseInt(results.getString("hauteur")),
+                        results.getString("etage.nom")
+                );
+
+                if (!SalleParEtage.containsKey(results.getString("etage.nom"))) {
+                    SalleParEtage.put(results.getString("etage.nom"), new ArrayList<>());
+                    SalleParEtage.get(results.getString("etage.nom")).add(salle);
+                } else {
+                    SalleParEtage.get(results.getString("etage.nom")).add(salle);
+                }
+
+            }
+            stmt.close();
+        } catch (SQLException e) {
+            e.printStackTrace(System.err);
+            throw new IllegalArgumentException("Impossible d'obtenir la liste des"
+                    + " salles par étage");
+
+        }
+
+        return SalleParEtage;
     }
 
     /**
@@ -183,7 +245,41 @@ class BaseDeDonnees {
      * "seance.evenement_id = 4"
      */
     static ArrayList<Seance> obtenirSeancesContrainte(String contrainte) {
-        throw new UnsupportedOperationException("A implémenter");
+        ArrayList<Seance> listSeance = new ArrayList<>();
+        try {
+            Statement stmt = connexion.createStatement();
+            ResultSet results = stmt.executeQuery("SELECT seance.* , salle.nom FROM seance INNER JOIN salle_seance ON salle_seance.seance_id=seance.id "
+                    + "INNER JOIN salle ON salle.id=salle_seance.salle_id WHERE " + contrainte + " ORDER BY seance.titre");
+
+            ArrayList<String> salles = new ArrayList<>();
+
+            while (results.next()) {
+                Seance seance = new Seance(
+                        results.getString("titre"), results.getString("description"),
+                        Seance.chaineVersDate(results.getString("dateDebut")), Seance.chaineVersDate(results.getString("dateFin")),
+                        results.getString("type"),
+                        null,
+                        results.getString("promotion"),
+                        results.getInt("evenement_id"));
+
+                String nomSeance = results.getString("titre");
+                do {
+                    salles.add(results.getString("salle.nom"));
+                } while (results.next() && nomSeance.equals(results.getString("titre")));
+
+                String[] tabSalles = new String[salles.size()];
+                salles.toArray(tabSalles);
+                seance.salles = tabSalles;
+
+                listSeance.add(seance);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace(System.err);
+            throw new IllegalArgumentException("Impossible d'obtenir la liste des seances");
+
+        }
+
+        return listSeance;
     }
 
     /**
@@ -191,7 +287,40 @@ class BaseDeDonnees {
      * donnée
      */
     static ArrayList<Seance> obtenirSeancesSalleDate(String salle, Date date) {
-        throw new UnsupportedOperationException("A implémenter");
+        ArrayList<Seance> listSeance = new ArrayList<>();
+        try {
+            Statement stmt = connexion.createStatement();
+            ResultSet results = stmt.executeQuery("SELECT seance.* , salle.nom FROM seance INNER JOIN salle_seance ON salle_seance.seance_id=seance.id "
+                    + "INNER JOIN salle ON salle.id=salle_seance.salle_id WHERE salle.nom='"+salle+"' AND '"+ Seance.dateVersChaineAvecHeure(date) +"' BETWEEN dateDebut AND dateFin");
+            ArrayList<String> salles = new ArrayList<>();
+
+            while (results.next()) {
+                Seance seance = new Seance(
+                        results.getString("titre"), results.getString("description"),
+                        Seance.chaineVersDate(results.getString("dateDebut")), Seance.chaineVersDate(results.getString("dateFin")),
+                        results.getString("type"),
+                        null,
+                        results.getString("promotion"),
+                        results.getInt("evenement_id"));
+
+                String nomSeance = results.getString("titre");
+                do {
+                    salles.add(results.getString("salle.nom"));
+                } while (results.next() && nomSeance.equals(results.getString("titre")));
+
+                String[] tabSalles = new String[salles.size()];
+                salles.toArray(tabSalles);
+                seance.salles = tabSalles;
+
+                listSeance.add(seance);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace(System.err);
+            throw new IllegalArgumentException("Impossible d'obtenir la liste des seances");
+
+        }
+
+        return listSeance;
     }
 
     /**
@@ -206,29 +335,7 @@ class BaseDeDonnees {
      * Obtenir tous les événements depuis la base de données
      */
     static ArrayList<Evenement> obtenirEvenements() {
-        ArrayList<Evenement> Event = new ArrayList<>();
-
-        try {
-            Statement stmt = connexion.createStatement();
-            ResultSet results = stmt.executeQuery("SELECT * FROM evenement");
-
-            while (results.next()) {
-                Evenement event = new Evenement(
-                        results.getString("nomCourt"),
-                        results.getString("nom"),
-                        results.getString("description")
-                );
-                Event.add(event);
-            }
-            stmt.close();
-        } catch (SQLException e) {
-            e.printStackTrace(System.err);
-            throw new IllegalArgumentException("Impossible d'obtenir la liste des"
-                    + "evenements");
-
-        }
-
-        return Event;
+        throw new UnsupportedOperationException("A implémenter");
     }
 
     /**

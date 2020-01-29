@@ -12,9 +12,10 @@ echo "* Import des salles"
 ./scripts/executer.sh import-salles data/salles/salles.csv
 
 echo "* Import des événements et de leurs séances"
-./scripts/executer.sh import-evenements data/evenements/forum_stages.csv
-./scripts/executer.sh import-evenements data/evenements/jpo.csv
+./scripts/executer.sh import-evenements data/evenements/forum_stages_seances.csv
+./scripts/executer.sh import-evenements data/evenements/jpo_seances.csv
 echo "Fait"
+
 
 echo "* Import des séances de l'API"
 echo "  A faire"

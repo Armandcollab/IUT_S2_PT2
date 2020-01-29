@@ -1,5 +1,8 @@
 package evenements;
 
+import java.awt.BorderLayout;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 
 public class Main {
@@ -14,11 +17,11 @@ public class Main {
         for (HashMap<String, String> donneesSalle : csv.donnees) {
             Salle salle = new Salle(
                     donneesSalle.get("Nom"),
-                    0,
-                    0,
-                    0,
-                    0,
-                    null
+                    Integer.parseInt(donneesSalle.get("Xhautgauche")),
+                    Integer.parseInt(donneesSalle.get("Yhautgauche")),
+                    Integer.parseInt(donneesSalle.get("Largeur")),
+                    Integer.parseInt(donneesSalle.get("Hauteur")),
+                    donneesSalle.get("Etage")
             );
             BaseDeDonnees.importerSalle(salle);
         }
@@ -28,24 +31,38 @@ public class Main {
      * Importer les séances
      */
     static void importerSeances(String fichier) {
-        throw new UnsupportedOperationException("A implémenter");
+        FormatCsv csv = new FormatCsv(fichier, ',');
+        csv.lire();
+
+        for (HashMap<String, String> donneesSeance : csv.donnees) {
+            FormatCsv csv1 = new FormatCsv(donneesSeance.get("Salle"), ',');
+            csv1.lire();
+            ArrayList<String> salles = new ArrayList<>();
+            for (Salle salle : BaseDeDonnees.obtenirSalles()) {
+                salles.add(salle.nom);
+            }
+            String[] sallesTab = new String[salles.size()];
+            sallesTab = salles.toArray(sallesTab);
+
+            Seance seance = new Seance(
+                    donneesSeance.get("Titre"),
+                    donneesSeance.get("Description"),
+                    Seance.chaineVersDate(donneesSeance.get("DateDebut")),
+                    Seance.chaineVersDate(donneesSeance.get("DateFin")),
+                    donneesSeance.get("Type"),
+                    sallesTab,
+                    donneesSeance.get("Promotion"),
+                    BaseDeDonnees.idDeLevenement(donneesSeance.get("Evenement"))
+            );
+            BaseDeDonnees.importerSeance(seance);
+        }
     }
 
     /**
      * Importe les événements d'un fichier CSV dans la base de données
      */
     static void importerEvenements(String fichier) {
-        FormatCsv csv = new FormatCsv(fichier, ',');
-        csv.lire();
-
-        for (HashMap<String, String> donneesEvent : csv.donnees) {
-            Evenement event;
-            event = new Evenement(
-                    donneesEvent.get("NomCourt"),
-                    donneesEvent.get("Nom"),
-                    donneesEvent.get("Description"));
-            BaseDeDonnees.importerEvenement(event);
-        }
+        throw new UnsupportedOperationException("A implémenter");
     }
 
     /**
@@ -119,11 +136,14 @@ public class Main {
                         }
                         break;
                     case "import-seances":
-                        throw new UnsupportedOperationException("A implémenter");
-                    case "import-evenements":
                         if (verifierArgument(args, "fichier-csv")) {
-                            importerEvenements(args[1]);
+                            importerSeances(args[1]);
+                            importerSeances(args[2]);
                         }
+                        break;
+                    case "import-evenements":
+                        throw new UnsupportedOperationException("A implémenter");
+                    case "generer":
                         generer();
                         break;
                     case "vider":
