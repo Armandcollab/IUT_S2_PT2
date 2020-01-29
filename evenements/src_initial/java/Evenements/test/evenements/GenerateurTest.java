@@ -48,7 +48,7 @@ public class GenerateurTest {
             ArrayList<Seance> seances = new ArrayList<>();
             String[] salles = {"test"};
             seances.add(new Seance("une séance", "description", new Date(120, 0, 25, 14, 00, 00), new Date(120, 0, 25, 18, 00, 00),
-                    "type", salles, "INFO_S1", null));
+                    "type", salles, "INFO_S1", 0));
 
             String html = Generateur.seancesVersListeHtml(seances);
 

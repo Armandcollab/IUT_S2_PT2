@@ -91,7 +91,6 @@ class BaseDeDonnees {
      * Trouve l'ID d'une salle
      */
     static int idDeLaSalle(String nom) {
-
         return trouverId("salle", "salle.nom", nom);
     }
 
@@ -99,7 +98,11 @@ class BaseDeDonnees {
      * Trouver l'ID d'un événement
      */
     static int idDeLevenement(String nomCourt) {
-        return trouverId("evenement", "nomCourt", nomCourt);
+        if (nomCourt!=null) {
+           return trouverId("evenement", "nomCourt", nomCourt); 
+        } else {
+            return 0;
+        }
     }
 
     /**
@@ -135,7 +138,7 @@ class BaseDeDonnees {
      * Importe la séance donnée en argument dans la base
      */
     static void importerSeance(Seance seance) {
-        if (seance.idEvenement == null) {
+        if (seance.idEvenement == 0) {
             executerRequete("INSERT INTO seance (titre,description,dateDebut,dateFin,type,promotion)"
                     + " VALUES (\"" + echapper(seance.titre) + "\"" + "," + "\"" + echapper(seance.description) + "\""
                     + "," + "\"" + Seance.dateVersChaineAvecHeure(seance.dateDebut) + "\"" + "," + "\"" + Seance.dateVersChaineAvecHeure(seance.dateFin) + "\"" + ","

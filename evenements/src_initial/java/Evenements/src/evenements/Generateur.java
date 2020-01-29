@@ -31,7 +31,7 @@ public class Generateur {
         adresseSiteWeb = System.getenv("WEBSITE_URL");
 
         genererPlan();
-        // genererPagesSalles();
+        genererPagesSalles();
         // genererPageEvenements();
     }
 
@@ -57,14 +57,14 @@ public class Generateur {
         String sallesHtml = "<ul>";
 
         for (String e : BaseDeDonnees.obtenirSallesParEtages().keySet()) {
-            sallesHtml += "<li>" + e + "</li>";
-            sallesHtml += "<ul>";
+            sallesHtml += "<h1 style=\"color : red\">" + e + "</h1>";
+
             for (Salle s : BaseDeDonnees.obtenirSallesParEtages().get(e)) {
-                sallesHtml += "<li>" + s.nom + "</li>";
+                sallesHtml += "<li><a href=\"salle-" + s.nom + ".html\">" + s.nom + "</a></li>";
             }
-            sallesHtml += "</ul>";
+
         }
-        
+
         sallesHtml += "</ul>";
 
         return sallesHtml;
@@ -82,7 +82,7 @@ public class Generateur {
      * Créé le code HTML d'une liste de séances
      */
     static String seancesVersListeHtml(ArrayList<Seance> seances) {
-        throw new UnsupportedOperationException("A implémenter");
+        return "c bon";
     }
 
     /**
@@ -97,7 +97,10 @@ public class Generateur {
      * Génère les pages des salles
      */
     static void genererPagesSalles() {
-        throw new UnsupportedOperationException("A implémenter");
+        for (Salle e : BaseDeDonnees.obtenirSalles()) {
+            valeursMotsCles.put("[[SCEANCES]]", seancesVersListeHtml(BaseDeDonnees.obtenirSeancesSalleDate(e.nom, aujourdhui)));
+            traiterTemplate("salle.html","salle-" + e.nom + ".html");
+        }
     }
 
     /**
