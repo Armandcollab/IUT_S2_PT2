@@ -80,7 +80,7 @@ public class Generateur {
                     int x = s.Xhautgauche / 6;
                     int l = s.largeur / 6;
                     int h = s.hauteur / 6;
-                    planHtml += "<a href=\"salle.html\" style=\"top: "
+                    planHtml += "<a href=\"salle-" + "[[SALLE]]" + ".html\" style=\"top:"
                             + y + "px; left: " + x + "px; height: "
                             + h + "px; width: "
                             + l + "px;\">" + s.nom + "</a>";
@@ -112,20 +112,22 @@ public class Generateur {
      * esthétique
      */
     static String seancesVersHtmlFormate(ArrayList<Seance> seances) {
-        String seance_Html = "<h1> Liste des séances de la la salle XXX"; // A compléter
+        String seance_Html = "";
         for (Seance s : seances) {
             String[] tab_Deb = Seance.dateVersHeure(s.dateDebut).split(":");
             String[] tab_Fin = Seance.dateVersHeure(s.dateFin).split(":");
             seance_Html += "<div class=\"salle\">";
             seance_Html += "<div class=\"nav_date\">";
             seance_Html += "<p>" + "date" + "</p>"; // completer avec la récupération le la date actuelle
-            seance_Html += "<a href=\"salle-XXX-" + s + ".html\"><imgs/right.png alt=\"rght\"</a>"; // accès à la page du jour suivant
-            seance_Html += "<a href=\"salle-XXX.html\" id=\"auj\">aujourd'hui</a>"; // retour à la page courante de la salle
+            seance_Html += "<a href=\"salle-" + "[[SALLE]]" + "-" + "" + ".html\"><imgs/right.png alt=\"rght\"</a>"; // accès à la page du jour suivant
+            seance_Html += "<a href=\"salle-" + "[[SALLE]]" + ".html\" id=\"auj\">aujourd'hui</a>"; // retour à la page courante de la salle
             seance_Html += "</div>"; // fin class nav_salle
             seance_Html += "<div class=\"planning\">";
-            int top = (8 - Integer.parseInt(tab_Deb[0])) * 10 + (8 - Integer.parseInt(tab_Deb[0]));  //  placement séance en %
-            int height = (Integer.parseInt(tab_Fin[0]) - Integer.parseInt(tab_Deb[0])) * 10 + 10; // taille de la séance en %
-            seance_Html += "<div class=\"seance\" style=\"top:" + top + "; height:" + height + ";\""; // dessin des séances
+            int top = (8 - Integer.parseInt(tab_Deb[0])) * 10 
+                    + ((60 - Integer.parseInt(tab_Deb[1]) / 10)) + (8 - Integer.parseInt(tab_Deb[0]));  //  placement séance en % avec 
+            int height = (Integer.parseInt(tab_Fin[0]) - Integer.parseInt(tab_Deb[0])) * 10
+                    + 10 + ((Integer.parseInt(tab_Deb[1]) - Integer.parseInt(tab_Fin[2])) / 10); // taille de la séance en %
+            seance_Html += "<div class=\"seance\" style=\"top:" + top + "; height:" + height + ";\">"; // dessin des séances
             seance_Html += "<h2>" + s.titre + "</h2>"; // ajouter le titre de la séance
             seance_Html += "<div class=\"description\">";
             seance_Html += "<p>" + s.description + "</p>"; // description de la séance import de la base
@@ -136,10 +138,10 @@ public class Generateur {
             seance_Html += "<p>" + Seance.dateVersHeure(s.dateDebut)
                     + "-->" + Seance.dateVersHeure(s.dateFin) + "</p>";
             seance_Html += "</div>"; // fin class seance
-            seance_Html += "<div class=\"horaire\"";
+            seance_Html += "<div class=\"horaire\">";
             for (int i = 8; i <= 17; i++) {
                 seance_Html += "<div class=\"echelle\">";
-                seance_Html += i + ":00";
+                seance_Html += "<p>" + i + ":00 </p>";
                 seance_Html += "<hr>";
                 seance_Html += "</div>"; // fin class echelle
             }
