@@ -81,17 +81,18 @@ public class GenerateurTest {
             String[] salles = {"test1"};
 
             BaseDeDonnees.importerSeance(new Seance("une séance", "description",
-                    new Date(2020, 01, 25, 14, 00, 00), new Date(120, 0, 25, 18, 00, 00),
+                    new Date(120, 1, 25, 14, 00, 00), new Date(120, 1, 25, 18, 00, 00),
                     "type", salles, "INFO_S1", null));
             BaseDeDonnees.importerSeance(new Seance("une séance le lendemain", "description",
-                    new Date(2020, 01, 26, 14, 00, 00), new Date(120, 0, 26, 18, 00, 00),
+                    new Date(120, 1, 26, 14, 00, 00), new Date(120, 1, 26, 18, 00, 00),
                     "type", salles, "INFO_S1", null));
-
+            Generateur.aujourdhui = Seance.chaineVersDate("2020-02-25 14:00:00");
             Generateur.genererPlan();
             Generateur.genererPagesSalles();
 
             if (verifierFichierExiste("salle-test1.html")) {
                 String contenu = lireFichier("salle-test1.html");
+                System.out.println(contenu);
                 assertTrue("Le nom de la salle est contenu dans sa page générée", contenu.contains("test1"));
                 assertTrue("La séance est dans la page générée", contenu.contains("une séance"));
                 assertFalse("La séance du lendemain n'est pas dans la page générée", contenu.contains("une séance le lendemain"));

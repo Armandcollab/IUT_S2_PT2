@@ -97,7 +97,7 @@ class BaseDeDonnees {
     /**
      * Trouver l'ID d'un événement
      */
-    static Integer idDeLevenement(String nomCourt) {
+     static Integer idDeLevenement(String nomCourt) {
         if (nomCourt != null) {
             return trouverId("evenement", "nomCourt", nomCourt);
         } else {
@@ -138,7 +138,7 @@ class BaseDeDonnees {
      * Importe la séance donnée en argument dans la base
      */
     static void importerSeance(Seance seance) {
-        if (seance.idEvenement == null) {
+        if (seance.idEvenement.intValue() == 0) {
             executerRequete("INSERT INTO seance (titre,description,dateDebut,dateFin,type,promotion)"
                     + " VALUES (\"" + echapper(seance.titre) + "\"" + "," + "\"" + echapper(seance.description) + "\""
                     + "," + "\"" + Seance.dateVersChaineAvecHeure(seance.dateDebut) + "\"" + "," + "\"" + Seance.dateVersChaineAvecHeure(seance.dateFin) + "\"" + ","
@@ -147,7 +147,7 @@ class BaseDeDonnees {
             executerRequete("INSERT INTO seance (titre,description,dateDebut,dateFin,type,promotion,evenement_id)"
                     + " VALUES (\"" + echapper(seance.titre) + "\"" + "," + "\"" + echapper(seance.description) + "\""
                     + "," + "\"" + Seance.dateVersChaineAvecHeure(seance.dateDebut) + "\"" + "," + "\"" + Seance.dateVersChaineAvecHeure(seance.dateFin) + "\"" + ","
-                    + "\"" + echapper(seance.type) + "\"" + "," + "\"" + echapper(seance.promotion) + "\"" + "," + "\"" + seance.idEvenement + "\")",
+                    + "\"" + echapper(seance.type) + "\"" + "," + "\"" + echapper(seance.promotion) + "\"" + "," + "\"" + seance.idEvenement.intValue() + "\")",
                     "Erreur lors de l'importation d'une salle");
         }
         for (String salle : seance.salles) {
@@ -294,10 +294,11 @@ class BaseDeDonnees {
         try {
             Statement stmt = connexion.createStatement();
             ResultSet results = stmt.executeQuery("SELECT seance.* , salle.nom FROM seance INNER JOIN salle_seance ON salle_seance.seance_id=seance.id "
-                    + "INNER JOIN salle ON salle.id=salle_seance.salle_id WHERE salle.nom='" + salle + "' AND '" + Seance.dateVersChaineAvecHeure(date) + "' BETWEEN dateDebut AND dateFin");
+                    + "INNER JOIN salle ON salle.id=salle_seance.salle_id WHERE salle.nom='" + salle + "' AND dateDebut LIKE '" + Seance.dateVersChaine(date) + "%'");
             ArrayList<String> salles = new ArrayList<>();
 
             while (results.next()) {
+                System.out.println(results);
                 Seance seance = new Seance(
                         results.getString("titre"), results.getString("description"),
                         Seance.chaineVersDate(results.getString("dateDebut")), Seance.chaineVersDate(results.getString("dateFin")),

@@ -84,8 +84,8 @@ public class Generateur {
     static String seancesVersListeHtml(ArrayList<Seance> seances) {
         String salleHtml = "<p></p><ul>";
         for (Seance e : seances) {
-            salleHtml += "<li><p><span style=\"font-weight : bolder;\">" + e.titre + "</span> : " + e.description + "</p>"
-                    + "<p>Démarre à " + Seance.dateVersHeure(e.dateDebut) + " / Fini à "+ Seance.dateVersHeure(e.dateFin) +"</p></li>";
+            salleHtml += "<li><p><span style=\"font-weight : bolder;\"> " + e.titre + " </span> : " + e.description + "</p>"
+                    + "<p>Démarre à " + Seance.dateVersHeure(e.dateDebut) + " / Fini à " + Seance.dateVersHeure(e.dateFin) + "</p></li>";
         }
         salleHtml += "</ul>";
         return salleHtml;
@@ -104,9 +104,14 @@ public class Generateur {
      */
     static void genererPagesSalles() {
         for (Salle e : BaseDeDonnees.obtenirSalles()) {
-            valeursMotsCles.put("[[SEANCES]]", seancesVersListeHtml(BaseDeDonnees.obtenirSeancesSalleDate(e.nom, aujourdhui)));
+            if (!BaseDeDonnees.obtenirSeancesSalleDate(e.nom, aujourdhui).isEmpty()) {
+                valeursMotsCles.put("[[SEANCES]]", seancesVersListeHtml(BaseDeDonnees.obtenirSeancesSalleDate(e.nom, aujourdhui)));
+            } else {
+                valeursMotsCles.put("[[SEANCES]]", "<p> Pas de séances prévus pour aujourd'hui</p>");
+            }
             valeursMotsCles.put("[[SALLE]]", e.nom);
-            traiterTemplate("salle.html","salle-" + e.nom + ".html");
+            traiterTemplate("salle.html", "salle-" + e.nom + ".html");
+            valeursMotsCles.remove("[[SEANCES]]");
         }
     }
 
