@@ -82,7 +82,13 @@ public class Generateur {
      * Créé le code HTML d'une liste de séances
      */
     static String seancesVersListeHtml(ArrayList<Seance> seances) {
-        return "c bon";
+        String salleHtml = "<p></p><ul>";
+        for (Seance e : seances) {
+            salleHtml += "<li><p><span style=\"font-weight : bolder;\">" + e.titre + "</span> : " + e.description + "</p>"
+                    + "<p>Démarre à " + Seance.dateVersHeure(e.dateDebut) + " / Fini à "+ Seance.dateVersHeure(e.dateFin) +"</p></li>";
+        }
+        salleHtml += "</ul>";
+        return salleHtml;
     }
 
     /**
@@ -98,7 +104,8 @@ public class Generateur {
      */
     static void genererPagesSalles() {
         for (Salle e : BaseDeDonnees.obtenirSalles()) {
-            valeursMotsCles.put("[[SCEANCES]]", seancesVersListeHtml(BaseDeDonnees.obtenirSeancesSalleDate(e.nom, aujourdhui)));
+            valeursMotsCles.put("[[SEANCES]]", seancesVersListeHtml(BaseDeDonnees.obtenirSeancesSalleDate(e.nom, aujourdhui)));
+            valeursMotsCles.put("[[SALLE]]", e.nom);
             traiterTemplate("salle.html","salle-" + e.nom + ".html");
         }
     }

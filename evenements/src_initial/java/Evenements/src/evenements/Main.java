@@ -35,7 +35,6 @@ public class Main {
         csv.lire();
 
         for (HashMap<String, String> donneesSeance : csv.donnees) {
-            
             String[] sallesTab = donneesSeance.get("Salles").split(",");
             Seance seance = new Seance(
                     donneesSeance.get("Titre"),

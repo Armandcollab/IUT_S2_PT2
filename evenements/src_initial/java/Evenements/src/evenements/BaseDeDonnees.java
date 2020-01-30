@@ -97,11 +97,11 @@ class BaseDeDonnees {
     /**
      * Trouver l'ID d'un événement
      */
-    static int idDeLevenement(String nomCourt) {
-        if (nomCourt!=null) {
-           return trouverId("evenement", "nomCourt", nomCourt); 
+    static Integer idDeLevenement(String nomCourt) {
+        if (nomCourt != null) {
+            return trouverId("evenement", "nomCourt", nomCourt);
         } else {
-            return 0;
+            return null;
         }
     }
 
@@ -138,7 +138,7 @@ class BaseDeDonnees {
      * Importe la séance donnée en argument dans la base
      */
     static void importerSeance(Seance seance) {
-        if (seance.idEvenement == 0) {
+        if (seance.idEvenement == null) {
             executerRequete("INSERT INTO seance (titre,description,dateDebut,dateFin,type,promotion)"
                     + " VALUES (\"" + echapper(seance.titre) + "\"" + "," + "\"" + echapper(seance.description) + "\""
                     + "," + "\"" + Seance.dateVersChaineAvecHeure(seance.dateDebut) + "\"" + "," + "\"" + Seance.dateVersChaineAvecHeure(seance.dateFin) + "\"" + ","
@@ -294,7 +294,7 @@ class BaseDeDonnees {
         try {
             Statement stmt = connexion.createStatement();
             ResultSet results = stmt.executeQuery("SELECT seance.* , salle.nom FROM seance INNER JOIN salle_seance ON salle_seance.seance_id=seance.id "
-                    + "INNER JOIN salle ON salle.id=salle_seance.salle_id WHERE salle.nom='"+salle+"' AND '"+ Seance.dateVersChaineAvecHeure(date) +"' BETWEEN dateDebut AND dateFin");
+                    + "INNER JOIN salle ON salle.id=salle_seance.salle_id WHERE salle.nom='" + salle + "' AND '" + Seance.dateVersChaineAvecHeure(date) + "' BETWEEN dateDebut AND dateFin");
             ArrayList<String> salles = new ArrayList<>();
 
             while (results.next()) {

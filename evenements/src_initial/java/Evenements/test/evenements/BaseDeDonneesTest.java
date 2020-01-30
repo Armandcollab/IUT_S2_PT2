@@ -78,7 +78,7 @@ public class BaseDeDonneesTest {
             Date fin = new Date(120, 0, 25, 18, 00, 00);
 
             BaseDeDonnees.importerSeance(new Seance("Une séance", "Description",
-                    debut, fin, "Un type", salles, "INFO_S1", 0)
+                    debut, fin, "Un type", salles, "INFO_S1", null)
             );
 
             ArrayList<Seance> seances = BaseDeDonnees.obtenirSeancesContrainte("TRUE");
@@ -111,11 +111,11 @@ public class BaseDeDonneesTest {
 
             BaseDeDonnees.importerSeance(new Seance("Une séance", "Description",
                     new Date(120, 0, 25, 14, 00, 00), new Date(120, 0, 25, 18, 00, 00),
-                    "Un type", salles, "INFO_S1", 0)
+                    "Un type", salles, "INFO_S1", null)
             );
             BaseDeDonnees.importerSeance(new Seance("Une séance le lendemain", "Description",
                     new Date(120, 0, 26, 14, 00, 00), new Date(120, 0, 26, 18, 00, 00),
-                    "Un type", salles, "INFO_S1", 0)
+                    "Un type", salles, "INFO_S1", null)
             );
 
             ArrayList<Seance> seances = BaseDeDonnees.obtenirSeancesSalleDate("test", new Date(120, 0, 25, 14, 00, 00));
