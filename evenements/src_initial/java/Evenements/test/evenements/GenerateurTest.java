@@ -53,7 +53,7 @@ public class GenerateurTest {
             String html = Generateur.seancesVersListeHtml(seances);
 
             assertTrue(html.contains("une séance"));
-            assertTrue(html.contains("14:00:00"));
+            assertTrue(html.contains("14:00"));
         }
     }
 

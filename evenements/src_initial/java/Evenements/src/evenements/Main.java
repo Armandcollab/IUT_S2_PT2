@@ -1,5 +1,6 @@
 package evenements;
 
+import java.awt.BorderLayout;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -21,7 +22,6 @@ public class Main {
                     Integer.parseInt(donneesSalle.get("Largeur")),
                     Integer.parseInt(donneesSalle.get("Hauteur")),
                     donneesSalle.get("Etage")
-
             );
             BaseDeDonnees.importerSalle(salle);
         }
@@ -31,7 +31,23 @@ public class Main {
      * Importer les séances
      */
     static void importerSeances(String fichier) {
-        throw new UnsupportedOperationException("A implémenter");
+        FormatCsv csv = new FormatCsv(fichier, ',');
+        csv.lire();
+
+        for (HashMap<String, String> donneesSeance : csv.donnees) {
+            String[] sallesTab = donneesSeance.get("Salles").split(",");
+            Seance seance = new Seance(
+                    donneesSeance.get("Titre"),
+                    donneesSeance.get("Description"),
+                    Seance.chaineVersDate(donneesSeance.get("DateDebut")),
+                    Seance.chaineVersDate(donneesSeance.get("DateFin")),
+                    donneesSeance.get("Type"),
+                    sallesTab,
+                    donneesSeance.get("Promotion"),
+                    BaseDeDonnees.idDeLevenement(donneesSeance.get("Evenement"))
+            );
+            BaseDeDonnees.importerSeance(seance);
+        }
     }
 
     /**
@@ -112,7 +128,10 @@ public class Main {
                         }
                         break;
                     case "import-seances":
-                        throw new UnsupportedOperationException("A implémenter");
+                        if (verifierArgument(args, "fichier-csv")) {
+                            importerSeances(args[1]);
+                        }
+                        break;
                     case "import-evenements":
                         throw new UnsupportedOperationException("A implémenter");
                     case "generer":
