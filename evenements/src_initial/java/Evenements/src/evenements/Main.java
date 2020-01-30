@@ -35,15 +35,7 @@ public class Main {
         csv.lire();
 
         for (HashMap<String, String> donneesSeance : csv.donnees) {
-            FormatCsv csv1 = new FormatCsv(donneesSeance.get("Salle"), ',');
-            csv1.lire();
-            ArrayList<String> salles = new ArrayList<>();
-            for (Salle salle : BaseDeDonnees.obtenirSalles()) {
-                salles.add(salle.nom);
-            }
-            String[] sallesTab = new String[salles.size()];
-            sallesTab = salles.toArray(sallesTab);
-
+            String[] sallesTab = donneesSeance.get("Salles").split(",");
             Seance seance = new Seance(
                     donneesSeance.get("Titre"),
                     donneesSeance.get("Description"),
@@ -62,7 +54,17 @@ public class Main {
      * Importe les événements d'un fichier CSV dans la base de données
      */
     static void importerEvenements(String fichier) {
-        throw new UnsupportedOperationException("A implémenter");
+        FormatCsv csv = new FormatCsv(fichier, ',');
+        csv.lire();
+
+        for (HashMap<String, String> donneesEvent : csv.donnees) {
+            Evenement event;
+            event = new Evenement(
+                    donneesEvent.get("NomCourt"),
+                    donneesEvent.get("Nom"),
+                    donneesEvent.get("Description"));
+            BaseDeDonnees.importerEvenement(event);
+        }
     }
 
     /**
@@ -138,11 +140,13 @@ public class Main {
                     case "import-seances":
                         if (verifierArgument(args, "fichier-csv")) {
                             importerSeances(args[1]);
-                            importerSeances(args[2]);
                         }
                         break;
                     case "import-evenements":
-                        throw new UnsupportedOperationException("A implémenter");
+                        if (verifierArgument(args, "fichier-csv")) {
+                            importerEvenements(args[1]);
+                        }
+                        break;
                     case "generer":
                         generer();
                         break;

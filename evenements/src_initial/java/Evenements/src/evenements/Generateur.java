@@ -31,8 +31,9 @@ public class Generateur {
         adresseSiteWeb = System.getenv("WEBSITE_URL");
 
         genererPlan();
-        // genererPagesSalles();
-        // genererPageEvenements();
+        genererPagesSalles();
+        genererPageEvenements();
+
     }
 
     /**
@@ -57,14 +58,14 @@ public class Generateur {
         String sallesHtml = "<ul>";
 
         for (String e : BaseDeDonnees.obtenirSallesParEtages().keySet()) {
-            sallesHtml += "<li>" + e + "</li>";
-            sallesHtml += "<ul>";
+            sallesHtml += "<h1 style=\"color : red\">" + e + "</h1>";
+
             for (Salle s : BaseDeDonnees.obtenirSallesParEtages().get(e)) {
-                sallesHtml += "<li>" + s.nom + "</li>";
+                sallesHtml += "<li><a href=\"salle-" + s.nom + ".html\">" + s.nom + "</a></li>";
             }
-            sallesHtml += "</ul>";
+
         }
-        
+
         sallesHtml += "</ul>";
 
         return sallesHtml;
@@ -82,7 +83,13 @@ public class Generateur {
      * Créé le code HTML d'une liste de séances
      */
     static String seancesVersListeHtml(ArrayList<Seance> seances) {
-        throw new UnsupportedOperationException("A implémenter");
+        String salleHtml = "<p></p><ul>";
+        for (Seance e : seances) {
+            salleHtml += "<li><p><span style=\"font-weight : bolder;\"> " + e.titre + " </span> : " + e.description + "</p>"
+                    + "<p>Démarre à " + Seance.dateVersHeure(e.dateDebut) + " / Fini à " + Seance.dateVersHeure(e.dateFin) + "</p></li>";
+        }
+        salleHtml += "</ul>";
+        return salleHtml;
     }
 
     /**
@@ -97,20 +104,63 @@ public class Generateur {
      * Génère les pages des salles
      */
     static void genererPagesSalles() {
-        throw new UnsupportedOperationException("A implémenter");
+        for (Salle e : BaseDeDonnees.obtenirSalles()) {
+            if (!BaseDeDonnees.obtenirSeancesSalleDate(e.nom, aujourdhui).isEmpty()) {
+                valeursMotsCles.put("[[SEANCES]]", seancesVersListeHtml(BaseDeDonnees.obtenirSeancesSalleDate(e.nom, aujourdhui)));
+            } else {
+                valeursMotsCles.put("[[SEANCES]]", "<p> Pas de séances prévus pour aujourd'hui</p>");
+            }
+            valeursMotsCles.put("[[SALLE]]", e.nom);
+            traiterTemplate("salle.html", "salle-" + e.nom + ".html");
+            valeursMotsCles.remove("[[SEANCES]]");
+        }
+    }
+
+    /**
+     * Retourne le code HTML qui affiche les évènements
+     */
+    static String listeEvenementsHtml() {
+        String evenementsHtml = "";
+
+        for (Evenement e : BaseDeDonnees.obtenirEvenements()) {
+            evenementsHtml += "<a style=\"font-size : 3em\" href=\"evenement-" + e.nomCourt + ".html\">" + e.nom + " :</a>"
+                    + "<h2>" + e.description + "</h2>";
+        }
+        return evenementsHtml;
     }
 
     /**
      * Génère la page des événements et chaque page d'événement
      */
     static void genererPageEvenements() {
-        throw new UnsupportedOperationException("A implémenter");
+        valeursMotsCles.put("[[EVENEMENTS]]", listeEvenementsHtml());
+        traiterTemplate("evenements.html");
+        for (Evenement e : BaseDeDonnees.obtenirEvenements()) {
+            genererPageEvenement(e);
+        }
+    }
+
+    /**
+     * Crée le code HTML qui affiche le programme d'un evenements
+     */
+    static String seancesEvenement(ArrayList<Seance> seances) {
+        String seancesHTML = "<ul>";
+        for (Seance e : seances) {
+            seancesHTML += "<li>" + e.titre;
+        }
+        return seancesHTML;
     }
 
     /**
      * Génère la page d'un événement
      */
     static void genererPageEvenement(Evenement evenement) {
-        throw new UnsupportedOperationException("A implémenter");
+        if (BaseDeDonnees.obtenirSeancesEvenement(evenement.nomCourt).isEmpty()) {
+            valeursMotsCles.put("[[DESCRIPTION]]", "Il n'y a pas encore de séances prévues pour cet événement.");
+        } else {
+            valeursMotsCles.put("[[DESCRIPTION]]", seancesVersListeHtml(BaseDeDonnees.obtenirSeancesEvenement(evenement.nomCourt)));
+        }
+        valeursMotsCles.put("[[EVENEMENT]]", evenement.nomCourt);
+        traiterTemplate("evenement.html", "evenement-" + evenement.nomCourt + ".html");
     }
 }

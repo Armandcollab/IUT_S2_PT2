@@ -98,14 +98,19 @@ class BaseDeDonnees {
     /**
      * Trouver l'ID d'un événement
      */
-    static int idDeLevenement(String nomCourt) {
-        return trouverId("evenement", "nomCourt", nomCourt);
+    static Integer idDeLevenement(String nomCourt) {
+        if (nomCourt != null) {
+            return trouverId("evenement", "nomCourt", nomCourt);
+        } else {
+            return null;
+        }
     }
 
     /**
      * Trouver l'ID d'une séance
      */
     static int idDeLaSeance(String titre) {
+        
         return trouverId("seance", "titre", titre);
     }
 
@@ -114,7 +119,6 @@ class BaseDeDonnees {
      * importé dans la base puis son id est retournée
      */
     static int importerOuTrouverEtage(String nom) {
-
         if (idDeLetage(nom) == 0) {
             importerEtage(nom);
         }
@@ -144,7 +148,7 @@ class BaseDeDonnees {
             executerRequete("INSERT INTO seance (titre,description,dateDebut,dateFin,type,promotion,evenement_id)"
                     + " VALUES (\"" + echapper(seance.titre) + "\"" + "," + "\"" + echapper(seance.description) + "\""
                     + "," + "\"" + Seance.dateVersChaineAvecHeure(seance.dateDebut) + "\"" + "," + "\"" + Seance.dateVersChaineAvecHeure(seance.dateFin) + "\"" + ","
-                    + "\"" + echapper(seance.type) + "\"" + "," + "\"" + echapper(seance.promotion) + "\"" + "," + "\"" + seance.idEvenement + "\")",
+                    + "\"" + echapper(seance.type) + "\"" + "," + "\"" + echapper(seance.promotion) + "\"" + "," + "\"" + seance.idEvenement.intValue() + "\")",
                     "Erreur lors de l'importation d'une salle");
         }
         for (String salle : seance.salles) {
@@ -153,13 +157,17 @@ class BaseDeDonnees {
                     "Erreur lors de l'importation d'une salle");
         }
 
+
     }
 
     /**
      * Importe un événement passé en paramètre dans la base
      */
     static void importerEvenement(Evenement evenement) {
-        throw new UnsupportedOperationException("A implémenter");
+        executerRequete("INSERT INTO evenement (nomcourt, nom, description)"
+                + " VALUES ('" + echapper(evenement.nomCourt) + "','" + echapper(evenement.nom) + "','" + echapper(evenement.description) + "')",
+                "Erreur lors de l'importation d'une evenement");
+
     }
 
     /**
@@ -250,7 +258,6 @@ class BaseDeDonnees {
             Statement stmt = connexion.createStatement();
             ResultSet results = stmt.executeQuery("SELECT seance.* , salle.nom FROM seance INNER JOIN salle_seance ON salle_seance.seance_id=seance.id "
                     + "INNER JOIN salle ON salle.id=salle_seance.salle_id WHERE " + contrainte + " ORDER BY seance.titre");
-
             ArrayList<String> salles = new ArrayList<>();
 
             while (results.next()) {
@@ -291,7 +298,7 @@ class BaseDeDonnees {
         try {
             Statement stmt = connexion.createStatement();
             ResultSet results = stmt.executeQuery("SELECT seance.* , salle.nom FROM seance INNER JOIN salle_seance ON salle_seance.seance_id=seance.id "
-                    + "INNER JOIN salle ON salle.id=salle_seance.salle_id WHERE salle.nom='"+salle+"' AND '"+ Seance.dateVersChaineAvecHeure(date) +"' BETWEEN dateDebut AND dateFin");
+                    + "INNER JOIN salle ON salle.id=salle_seance.salle_id WHERE salle.nom='" + salle + "' AND '" + Seance.dateVersChaineAvecHeure(date) + "' BETWEEN dateDebut AND dateFin");
             ArrayList<String> salles = new ArrayList<>();
 
             while (results.next()) {
@@ -328,14 +335,35 @@ class BaseDeDonnees {
      * donnée
      */
     static ArrayList<Seance> obtenirSeancesEvenement(String evenement) {
-        throw new UnsupportedOperationException("A implémenter");
+        return obtenirSeancesContrainte("seance.evenement_id = " + idDeLevenement(evenement));
     }
 
     /**
      * Obtenir tous les événements depuis la base de données
      */
     static ArrayList<Evenement> obtenirEvenements() {
-        throw new UnsupportedOperationException("A implémenter");
+        ArrayList<Evenement> Event = new ArrayList<>();
+
+        try {
+            Statement stmt = connexion.createStatement();
+            ResultSet results = stmt.executeQuery("SELECT * FROM evenement");
+
+            while (results.next()) {
+                Evenement event = new Evenement(
+                        results.getString("nomCourt"),
+                        results.getString("nom"),
+                        results.getString("description")
+                );
+                Event.add(event);
+            }
+            stmt.close();
+        } catch (SQLException e) {
+            e.printStackTrace(System.err);
+            throw new IllegalArgumentException("Impossible d'obtenir la liste des"
+                    + "evenements");
+
+        }
+        return Event;
     }
 
     /**
