@@ -1,9 +1,8 @@
-/evenements/src_initial/java/Evenements/build/
-/evenements/src_initial/java/Evenements/bin/
-/evenements/src_initial/java/Evenements/build/
-/evenements/src_initial/java/Evenements/bin/
-/evenements/src_initial/java/Evenements/build.xml
-/evenements/src_initial/java/Evenements/manifest.mf
-/evenements/src_initial/java/Evenements/nbproject/
-/evenements/src_initial/www
-
+*.class
+bin
+build
+bin
+*.xml
+*.mf
+nbproject/
+www
