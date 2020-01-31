@@ -53,7 +53,7 @@ public class GenerateurTest {
             String html = Generateur.seancesVersListeHtml(seances);
 
             assertTrue(html.contains("une séance"));
-            assertTrue(html.contains("14:00:00"));
+            assertTrue(html.contains("14:00"));
         }
     }
 
@@ -81,12 +81,12 @@ public class GenerateurTest {
             String[] salles = {"test1"};
 
             BaseDeDonnees.importerSeance(new Seance("une séance", "description",
-                    new Date(2020, 01, 25, 14, 00, 00), new Date(120, 0, 25, 18, 00, 00),
+                    new Date(120, 1, 25, 14, 00, 00), new Date(120, 1, 25, 18, 00, 00),
                     "type", salles, "INFO_S1", null));
             BaseDeDonnees.importerSeance(new Seance("une séance le lendemain", "description",
-                    new Date(2020, 01, 26, 14, 00, 00), new Date(120, 0, 26, 18, 00, 00),
+                    new Date(120, 1, 26, 14, 00, 00), new Date(120, 1, 26, 18, 00, 00),
                     "type", salles, "INFO_S1", null));
-
+            Generateur.aujourdhui = Seance.chaineVersDate("2020-02-25 14:00:00");
             Generateur.genererPlan();
             Generateur.genererPagesSalles();
 
@@ -111,6 +111,7 @@ public class GenerateurTest {
                 }
             }
         }
+
     }
 
     @Test
@@ -137,7 +138,6 @@ public class GenerateurTest {
 
             if (verifierFichierExiste("evenement-evt.html")) {
                 String contenu = lireFichier("evenement-evt.html");
-
                 assertTrue("Présence de la séance dans l'événement", contenu.contains("une séance de evt"));
 
                 if (Jalon.jalon >= Jalon.JALON_API_QR_CODES) {
