@@ -152,7 +152,7 @@ public class Generateur {
                 seance_Html += "<hr>";
                 seance_Html += "</div>"; // fin class echelle
             }
-            seance_Html += "</div>"; // fin class horaire
+            seance_Html += "</div>"; // fin class horaires
             seance_Html += "</div>"; // fin class planning
             seance_Html += "</div>";
         }
