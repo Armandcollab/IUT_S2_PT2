@@ -24,7 +24,7 @@ class Jalon {
     /**
      * Interrogation de l'API et ajout des QR codes
      */
-    static int JALON_API_QR_CODES = 5;
+    static int JALON_API_QR_CODES = 25;
 
     /**
      * Intégration HTML (vue en plan, vue des séances)
