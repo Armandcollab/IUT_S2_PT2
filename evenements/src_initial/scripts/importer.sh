@@ -18,5 +18,4 @@ echo "Fait"
 
 
 echo "* Import des séances de l'API"
-echo "  A faire"
-
+./scripts/telecharger-seances.sh

@@ -7,7 +7,7 @@ source ./scripts/config.sh
 DossierTelCSV=scripts/DossierTelCSV/
 rm $DossierTelCSV/*
 
-* "Lancement des requetes vers l'API"
+echo "* Lancement des requetes vers l'API"
 for salle in $(./scripts/executer.sh lister-salles)
 do 
     echo "* Importation des événements des 30 prochains jours de la salle $salle"
