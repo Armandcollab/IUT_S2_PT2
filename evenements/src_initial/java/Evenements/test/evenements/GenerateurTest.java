@@ -60,7 +60,6 @@ public class GenerateurTest {
     protected boolean verifierFichierExiste(String nomFichier) {
         boolean existe = (new File(Generateur.dossierSortie + "/" + nomFichier)).exists();
         assertTrue("Le fichier " + nomFichier + " est généré", existe);
-
         return existe;
     }
 

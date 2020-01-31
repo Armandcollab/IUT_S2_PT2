@@ -75,7 +75,10 @@ public class Generateur {
      * Génère la page du plan
      */
     static void genererPlan() {
+        QRCode.ecrireQRCode("www/imgs/qr_code/qr-plan.png", dossierTemplates +"plan.html");
+
         valeursMotsCles.put("[[SALLES]]", listeSallesHtml(null));
+        valeursMotsCles.put("[[QR_CODE]]", "./imgs/qr_code/qr-plan.png");
         traiterTemplate("plan.html");
     }
 
@@ -111,6 +114,8 @@ public class Generateur {
                 valeursMotsCles.put("[[SEANCES]]", "<p> Pas de séances prévus pour aujourd'hui</p>");
             }
             valeursMotsCles.put("[[SALLE]]", e.nom);
+            valeursMotsCles.put("[[QR_CODE_SALLE]]", "./imgs/qr_code/qr-salle-" + e.nom + ".png");
+            QRCode.ecrireQRCode("www/imgs/qr_code/qr-salle-" + e.nom + ".png", dossierTemplates + "salle-" + e.nom + ".html");
             traiterTemplate("salle.html", "salle-" + e.nom + ".html");
             valeursMotsCles.remove("[[SEANCES]]");
         }
@@ -141,17 +146,6 @@ public class Generateur {
     }
 
     /**
-     * Crée le code HTML qui affiche le programme d'un evenements
-     */
-    static String seancesEvenement(ArrayList<Seance> seances) {
-        String seancesHTML = "<ul>";
-        for (Seance e : seances) {
-            seancesHTML += "<li>" + e.titre;
-        }
-        return seancesHTML;
-    }
-
-    /**
      * Génère la page d'un événement
      */
     static void genererPageEvenement(Evenement evenement) {
@@ -160,6 +154,8 @@ public class Generateur {
         } else {
             valeursMotsCles.put("[[DESCRIPTION]]", seancesVersListeHtml(BaseDeDonnees.obtenirSeancesEvenement(evenement.nomCourt)));
         }
+        valeursMotsCles.put("[[QR_CODE_EVENT]]", "./imgs/qr_code/qr-evenement-" + evenement.nomCourt + ".png");
+        QRCode.ecrireQRCode("www/imgs/qr_code/qr-evenement-" + evenement.nomCourt + ".png", dossierTemplates + "qr-evenement-" + evenement.nomCourt + ".html");
         valeursMotsCles.put("[[EVENEMENT]]", evenement.nomCourt);
         traiterTemplate("evenement.html", "evenement-" + evenement.nomCourt + ".html");
     }
