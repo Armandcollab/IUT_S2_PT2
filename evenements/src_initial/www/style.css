@@ -1,146 +1,296 @@
 * {
-    font: 15px/1.5 sans-serif;
-    line-height: 1.25;
-    padding:0;
-    margin:0;
+  font: 15px/1.5 sans-serif;
+  line-height: 1.25;
+  padding: 0;
+  margin: 0;
 }
 
 a {
-    color:#356ae4;
+  color: #356ae4;
 }
 
 h1 {
-    text-align:center;
-    font-size: 22px;
-    margin-left:30px;
+  text-align: center;
+  font-size: 22px;
+  margin-left: 30px;
 }
 
 h2 {
-    font-size: 20px;
-    padding:0px;
-    margin:10px;
-    text-align:center;
+  font-size: 20px;
+  padding: 0px;
+  margin: 10px;
+  text-align: center;
 }
 
 h2.title {
-    font-weight:bold;
-    text-align:left;
+  font-weight: bold;
+  text-align: left;
 }
 
 .container {
-    margin-left:5%;
-    margin-right:5%;
+  margin-left: 5%;
+  margin-right: 5%;
 }
 
 nav .logo {
-    display:none;
+  display: none;
 }
 
 nav .container {
-    display:block;
+  display: block;
 }
 
 nav {
-    margin-bottom: 10px;
-    background: linear-gradient(white 0%, #eee 100%);
+  margin-bottom: 10px;
+  background: linear-gradient(white 0%, #eee 100%);
 }
 
 nav .container {
-    padding-left:5%;
-    padding-right:5%;
+  padding-left: 5%;
+  padding-right: 5%;
 }
 
 .expand {
-    flex-grow:1;
+  flex-grow: 1;
 }
 
 nav a {
-    color:black;
-    text-decoration:none;
-    margin-right:30px;
-    display:block;
-    padding:10px;    
-    text-align:center;
-    opacity:0.7;
+  color: black;
+  text-decoration: none;
+  margin-right: 30px;
+  display: block;
+  padding: 10px;
+  text-align: center;
+  opacity: 0.7;
 }
 
-nav a.active, nav a:hover {
-    opacity:1;
+nav a.active,
+nav a:hover {
+  opacity: 1;
 }
 
 nav .title {
-    float:right;
+  float: right;
 }
 
 nav img {
-    vertical-align: middle;
+  vertical-align: middle;
 }
+/*  PARTIE PLAN  */
+.etage_RDC {
+  grid-area: RDC;
+}
+.etage_1 {
+  grid-area: one;
+}
+.etage_2 {
+  grid-area: to;
+}
+.etage_3 {
+  grid-area: tree;
+}
+.etage {
+  display: grid;
+  grid-template-columns: repeat(1, 1fr);
+  grid-template-rows: repeat(4, 1fr);
+  grid-template-areas:
+    "RDC "
+    "one"
+    "to"
+    "tree";
+}
+.etage_RDC,
+.etage_1,
+.etage_2,
+.etage_3 {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  text-align: center;
+}
+.etage p {
+  width: 100%;
+  height: max-content;
+  font-size: 20px;
+  font-weight: bolder;
+}
+.plan {
+  position: relative;
+  height: auto;
+  width: max-content;
+}
+div.etage a {
+  position: absolute;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #356ae4;
+  opacity: 0.5;
+  font-size: 80%;
+  color: black;
+  writing-mode: vertical-rl;
+}
+/*  FIN PLAN  */
 
-
+/*  PARTIE SALLE  */
+.planning {
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.seance {
+  position: absolute;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  z-index: 1;
+  width: 45%;
+  border-radius: 10px;
+  color: #fff;
+}
+.seance div.description {
+  border: dashed #aaa 1px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  height: 40%;
+  width: 100%;
+}
+.seance h2 {
+  font-weight: bolder;
+  font-size: 80%;
+}
+.seance div.description p {
+  width: 100%;
+  height: max-content;
+  display: flex;
+  flex-wrap: wrap;
+  font-size: 80%;
+  justify-content: center;
+  align-items: center;
+} 
+.seance p {
+  font-size: 80%;
+}
+.nav_date {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+}
+#auj {
+  width: 80vw;
+  text-align: center;
+}
+.horaire {
+  display: flex;
+  flex-wrap: wrap;
+  width: 100%;
+  height: 100vh;
+  margin-bottom: h;
+  justify-content: center;
+  align-items: center;
+}
+.echelle {
+  position: relative;
+  border: #aaa solid 2px;
+  border-left: none;
+  border-right: none;
+  height: 10%;
+  width: 55%;
+}
+.echelle hr {
+  position: absolute;
+  top: 50%;
+  width: 100%;
+  border: dashed #aaa 1px;
+}
+.echelle p {
+  position: absolute;
+  top: 35%;
+  rotate: 90deg;
+  height: max-content;
+  width: max-content;
+}
+/*  FIN SALLE   */
 @media screen and (min-width: 860px) {
-    nav a.active, nav a:hover {
-        background-image:url('imgs/arrow.png');
-        background-repeat:no-repeat;
-        background-position:center bottom;
-    }
+  nav a.active,
+  nav a:hover {
+    background-image: url("imgs/arrow.png");
+    background-repeat: no-repeat;
+    background-position: center bottom;
+  }
 
-    .container {
-        margin-left: 10%;
-        margin-right: 10%;
-     }
+  .container {
+    margin-left: 10%;
+    margin-right: 10%;
+  }
 
-    nav .logo {
-        display:block;
-    }
+  nav .logo {
+    display: block;
+  }
 
-    nav .container {
-        display:flex;
-    }
+  nav .container {
+    display: flex;
+  }
+  .etage {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: repeat(2, 1fr);
+    grid-gap: 5px;
+    grid-template-areas:
+      "RDC one"
+      "to tree";
+  }
+  div.etage a {
+    writing-mode: horizontal-tb;
+  }
 }
 
 .footer {
-    margin-top:50px;
-    border-top:1px solid #eee;
-    text-align:center;
-    font-size:80%;
-    color:#aaa;
-    padding-top:10px;
-    font-variant:italic;
+  margin-top: 50px;
+  border-top: 1px solid #eee;
+  text-align: center;
+  font-size: 80%;
+  color: #aaa;
+  padding-top: 10px;
+  font-variant: italic;
 }
 
 .info {
-    margin:20px;
-    background-color:#f2f2ff;
-    border-radius:5px;
-    color:#27276c;
-    padding:10px;
-    background-image:url('imgs/info.png');
-    background-repeat:no-repeat;
-    background-position:13px 8px;
-    padding-left:35px;
+  margin: 20px;
+  background-color: #f2f2ff;
+  border-radius: 5px;
+  color: #27276c;
+  padding: 10px;
+  background-image: url("imgs/info.png");
+  background-repeat: no-repeat;
+  background-position: 13px 8px;
+  padding-left: 35px;
 }
 
 .days {
-    text-align:center;
-    margin-top:20px;
-    margin-bottom:20px;
+  text-align: center;
+  margin-top: 20px;
+  margin-bottom: 20px;
 }
 
 .days img {
-    vertical-align:middle;
+  vertical-align: middle;
 }
 
-
 .center {
-    text-align:center;
+  text-align: center;
 }
 
 .apercu {
-    border:5px dashed #333;
-    opacity:0.5;
+  border: 5px dashed #333;
+  opacity: 0.5;
 }
 
 .right-button {
-    float:right;
-    margin:2px;
+  float: right;
+  margin: 2px;
 }

@@ -44,5 +44,5 @@ class Jalon {
     /**
      * Le jalon en cours de développement.
      */
-    static int jalon = 6;
+    static int jalon = 4;
 }

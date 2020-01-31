@@ -104,7 +104,6 @@ nav img {
 .etage_2,
 .etage_3 {
   display: flex;
-  position: relative;
   flex-wrap: wrap;
   justify-content: center;
   text-align: center;
@@ -115,9 +114,10 @@ nav img {
   font-size: 20px;
   font-weight: bolder;
 }
-.etage img {
-  width: 597px; /*3581px grande taille*/
+.plan {
+  position: relative;
   height: auto;
+  width: max-content;
 }
 div.etage a {
   position: absolute;
@@ -126,6 +126,7 @@ div.etage a {
   align-items: center;
   background-color: #356ae4;
   opacity: 0.5;
+  font-size: 80%;
   color: black;
   writing-mode: vertical-rl;
 }
@@ -159,15 +160,20 @@ div.etage a {
 }
 .seance h2 {
   font-weight: bolder;
+  font-size: 80%;
 }
 .seance div.description p {
   width: 100%;
   height: max-content;
   display: flex;
   flex-wrap: wrap;
+  font-size: 80%;
   justify-content: center;
   align-items: center;
 } 
+.seance p {
+  font-size: 80%;
+}
 .nav_date {
   display: flex;
   flex-wrap: wrap;

@@ -31,8 +31,8 @@ public class Generateur {
         adresseSiteWeb = System.getenv("WEBSITE_URL");
 
         genererPlan();
-        // genererPagesSalles();
-        // genererPageEvenements();
+        genererPagesSalles();
+        genererPageEvenements();
     }
 
     /**
@@ -51,45 +51,46 @@ public class Generateur {
     }
 
     /**
+     * Convertion d'un entier en pixel vers un entier en %
+     *
+     * @param coordPx la coordonnée en pixel
+     * @return Retourne l'entier en %
+     */
+    static float convertionPxToPourcent(int coordPx, int coordPlan) {
+        float nbPourcent = (coordPx * 100) / coordPlan;
+        return nbPourcent;
+    }
+
+    /**
      * Retourne le code HTML qui affiche les salles
      */
     static String listeSallesHtml(String evenement) {
-        if (evenement == null) {
-            String sallesHtml = "<ul>";
-
-            for (String e : BaseDeDonnees.obtenirSallesParEtages().keySet()) {
-                sallesHtml += "<li>" + e + "</li>";
-                sallesHtml += "<ul>";
-                for (Salle s : BaseDeDonnees.obtenirSallesParEtages().get(e)) {
-                    sallesHtml += "<li>" + s.nom + "</li>";
-                }
-                sallesHtml += "</ul>";
-            }
-
-            sallesHtml += "</ul>";
-
-            return sallesHtml;
-        } else {
-            String planHtml = "<div class=\"etage\">";
-            for (String e : BaseDeDonnees.obtenirSallesParEtages().keySet()) {
-                planHtml += "<div class=\"etage_" + e + "\">";
-                planHtml += "<p>Etage : " + e + "</p>";
-                planHtml += "<img src=\"imgs/plan/" + e + ".png\" alt=\"" + e + "\" style=\" height:auto; width:;\">";
-                for (Salle s : BaseDeDonnees.obtenirSallesParEtages().get(e)) {
-                    int y = s.Yhautgauche / 6;
-                    int x = s.Xhautgauche / 6;
-                    int l = s.largeur / 6;
-                    int h = s.hauteur / 6;
-                    planHtml += "<a href=\"salle-" + "[[SALLE]]" + ".html\" style=\"top:"
-                            + y + "px; left: " + x + "px; height: "
-                            + h + "px; width: "
-                            + l + "px;\">" + s.nom + "</a>";
-                }
-                planHtml += "</div>";
+        int taillePlanL = 3581; // taille réelle d'un plan d'étage
+        int taillePlanH = 1265;
+        String planHtml = "<div class=\"etage\">";
+        for (String e : BaseDeDonnees.obtenirSallesParEtages().keySet()) {
+            planHtml += "<div class=\"etage_" + e + "\">";
+            planHtml += "<p>Etage : " + e + "</p>";
+            planHtml += "<div class=\"plan\">";
+            planHtml += "<img src=\"imgs/plan/" + e + ".png\" alt=\"" + e + "\""
+                    + "style=\" height:auto; width:"
+                    + "35vw ;\">";
+            for (Salle s : BaseDeDonnees.obtenirSallesParEtages().get(e)) {
+                float y = convertionPxToPourcent(s.Yhautgauche, taillePlanH);
+                float x = convertionPxToPourcent(s.Xhautgauche, taillePlanL);
+                float l = convertionPxToPourcent(s.largeur, taillePlanL);
+                int h = 31;
+                planHtml += "<a href=\"salle-" + s.nom + ".html\" style=\"top:"
+                        + y + "%; left: " + x + "%; height: "
+                        + h + "%; width: "
+                        + l + "%;\">" + s.nom + "</a>";
             }
             planHtml += "</div>";
-            return planHtml;
+            planHtml += "</div>";
         }
+        planHtml += "</div>";
+        return planHtml;
+
     }
 
     /**
@@ -104,7 +105,13 @@ public class Generateur {
      * Créé le code HTML d'une liste de séances
      */
     static String seancesVersListeHtml(ArrayList<Seance> seances) {
-        throw new UnsupportedOperationException("A implémenter");
+        String salleHtml = "<p></p><ul>";
+        for (Seance e : seances) {
+            salleHtml += "<li><p><span style=\"font-weight : bolder;\">" + e.titre + "</span> : " + e.description + "</p>"
+                    + "<p>Démarre à " + Seance.dateVersHeure(e.dateDebut) + " / Fini à " + Seance.dateVersHeure(e.dateFin) + "</p></li>";
+        }
+        salleHtml += "</ul>";
+        return salleHtml;
     }
 
     /**
@@ -119,15 +126,15 @@ public class Generateur {
             seance_Html += "<div class=\"salle\">";
             seance_Html += "<div class=\"nav_date\">";
             seance_Html += "<p>" + "date" + "</p>"; // completer avec la récupération le la date actuelle
-            seance_Html += "<a href=\"salle-" + "[[SALLE]]" + "-" + "" + ".html\"><imgs/right.png alt=\"rght\"</a>"; // accès à la page du jour suivant
-            seance_Html += "<a href=\"salle-" + "[[SALLE]]" + ".html\" id=\"auj\">aujourd'hui</a>"; // retour à la page courante de la salle
+            seance_Html += "<a href=\"salle-" + "[[SALLE]]"+ "-" + "" + ".html\"><img src=\"imgs/right.png\" alt=\"rght\"></a>"; // accès à la page du jour suivant
+            seance_Html += "<a href=\"salle-" + "[[SALLE]]" + ".html\" id=\"auj\">aujourd'hui</a>";
             seance_Html += "</div>"; // fin class nav_salle
             seance_Html += "<div class=\"planning\">";
-            int top = (8 - Integer.parseInt(tab_Deb[0])) * 10 
-                    + ((60 - Integer.parseInt(tab_Deb[1]) / 10)) + (8 - Integer.parseInt(tab_Deb[0]));  //  placement séance en % avec 
+            int top = (Integer.parseInt(tab_Deb[0])-8) * 10
+                    + ((Integer.parseInt(tab_Deb[1]))/10) + (Integer.parseInt(tab_Deb[0])-8);  //  placement séance 
             int height = (Integer.parseInt(tab_Fin[0]) - Integer.parseInt(tab_Deb[0])) * 10
-                    + 10 + ((Integer.parseInt(tab_Deb[1]) - Integer.parseInt(tab_Fin[2])) / 10); // taille de la séance en %
-            seance_Html += "<div class=\"seance\" style=\"top:" + top + "; height:" + height + ";\">"; // dessin des séances
+                    + 10 + ((Integer.parseInt(tab_Deb[1]) - (60 - Integer.parseInt(tab_Fin[1]))) / 10); // taille de la séance en %
+            seance_Html += "<div class=\"seance\" style=\"top:" + top + "%; height:" + height + "%; background-color:#"+ s.couleur() +";\">"; // dessin des séances
             seance_Html += "<h2>" + s.titre + "</h2>"; // ajouter le titre de la séance
             seance_Html += "<div class=\"description\">";
             seance_Html += "<p>" + s.description + "</p>"; // description de la séance import de la base
@@ -156,20 +163,63 @@ public class Generateur {
      * Génère les pages des salles
      */
     static void genererPagesSalles() {
-        throw new UnsupportedOperationException("A implémenter");
+        for (Salle e : BaseDeDonnees.obtenirSalles()) {
+            if (!BaseDeDonnees.obtenirSeancesSalleDate(e.nom, aujourdhui).isEmpty()) {
+                valeursMotsCles.put("[[SEANCES]]", seancesVersHtmlFormate(BaseDeDonnees.obtenirSeancesSalleDate(e.nom, aujourdhui)));
+            } else {
+                valeursMotsCles.put("[[SEANCES]]", "<p> Pas de séances prévus pour aujourd'hui</p>");
+            }
+            valeursMotsCles.put("[[SALLE]]", e.nom);
+            traiterTemplate("salle.html", "salle-" + e.nom + ".html");
+            valeursMotsCles.remove("[[SEANCES]]");
+        }
+    }
+
+    /**
+     * Retourne le code HTML qui affiche les évènements
+     */
+    static String listeEvenementsHtml() {
+        String evenementsHtml = "";
+
+        for (Evenement e : BaseDeDonnees.obtenirEvenements()) {
+            evenementsHtml += "<a style=\"font-size : 3em\" href=\"evenement-" + e.nomCourt + ".html\">" + e.nom + " :</a>"
+                    + "<h2>" + e.description + "</h2>";
+        }
+        return evenementsHtml;
     }
 
     /**
      * Génère la page des événements et chaque page d'événement
      */
     static void genererPageEvenements() {
-        throw new UnsupportedOperationException("A implémenter");
+        valeursMotsCles.put("[[EVENEMENTS]]", listeEvenementsHtml());
+        traiterTemplate("evenements.html");
+        for (Evenement e : BaseDeDonnees.obtenirEvenements()) {
+            genererPageEvenement(e);
+        }
+    }
+
+    /**
+     * Crée le code HTML qui affiche le programme d'un evenements
+     */
+    static String seancesEvenement(ArrayList<Seance> seances) {
+        String seancesHTML = "<ul>";
+        for (Seance e : seances) {
+            seancesHTML += "<li>" + e.titre;
+        }
+        return seancesHTML;
     }
 
     /**
      * Génère la page d'un événement
      */
     static void genererPageEvenement(Evenement evenement) {
-        throw new UnsupportedOperationException("A implémenter");
+        if (BaseDeDonnees.obtenirSeancesEvenement(evenement.nomCourt).isEmpty()) {
+            valeursMotsCles.put("[[DESCRIPTION]]", "Il n'y a pas encore de séances prévues pour cet événement.");
+        } else {
+            valeursMotsCles.put("[[DESCRIPTION]]", seancesVersListeHtml(BaseDeDonnees.obtenirSeancesEvenement(evenement.nomCourt)));
+        }
+        valeursMotsCles.put("[[EVENEMENT]]", evenement.nomCourt);
+        traiterTemplate("evenement.html", "evenement-" + evenement.nomCourt + ".html");
     }
 }
