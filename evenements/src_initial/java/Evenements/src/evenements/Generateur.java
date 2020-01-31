@@ -141,17 +141,6 @@ public class Generateur {
     }
 
     /**
-     * Crée le code HTML qui affiche le programme d'un evenements
-     */
-    static String seancesEvenement(ArrayList<Seance> seances) {
-        String seancesHTML = "<ul>";
-        for (Seance e : seances) {
-            seancesHTML += "<li>" + e.titre;
-        }
-        return seancesHTML;
-    }
-
-    /**
      * Génère la page d'un événement
      */
     static void genererPageEvenement(Evenement evenement) {

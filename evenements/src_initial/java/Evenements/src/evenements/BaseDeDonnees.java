@@ -148,7 +148,7 @@ class BaseDeDonnees {
             executerRequete("INSERT INTO seance (titre,description,dateDebut,dateFin,type,promotion,evenement_id)"
                     + " VALUES (\"" + echapper(seance.titre) + "\"" + "," + "\"" + echapper(seance.description) + "\""
                     + "," + "\"" + Seance.dateVersChaineAvecHeure(seance.dateDebut) + "\"" + "," + "\"" + Seance.dateVersChaineAvecHeure(seance.dateFin) + "\"" + ","
-                    + "\"" + echapper(seance.type) + "\"" + "," + "\"" + echapper(seance.promotion) + "\"" + "," + "\"" + seance.idEvenement.intValue() + "\")",
+                    + "\"" + echapper(seance.type) + "\"" + "," + "\"" + echapper(seance.promotion) + "\"" + "," + "\"" + seance.idEvenement + "\")",
                     "Erreur lors de l'importation d'une salle");
         }
         for (String salle : seance.salles) {
