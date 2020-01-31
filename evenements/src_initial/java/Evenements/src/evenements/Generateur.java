@@ -80,7 +80,7 @@ public class Generateur {
                 float x = convertionPxToPourcent(s.Xhautgauche, taillePlanL);
                 float l = convertionPxToPourcent(s.largeur, taillePlanL);
                 int h = 31;
-                planHtml += "<a href=\"salle-" + s.nom + ".html\" style=\"top:"
+                planHtml += "<a href=\"salle-" + s.nom + "-" + Seance.dateVersChaine(aujourdhui) + ".html\" style=\"top:"
                         + y + "%; left: " + x + "%; height: "
                         + h + "%; width: "
                         + l + "%;\">" + s.nom + "</a>";
@@ -118,23 +118,44 @@ public class Generateur {
      * Génère le code HTML d'une liste de séances formatées pour l'affichage
      * esthétique
      */
-    static String seancesVersHtmlFormate(ArrayList<Seance> seances) {
+    static String seancesVersHtmlFormate(ArrayList<Seance> seances, Date date, String sNom) {
         String seance_Html = "";
+        boolean cmp = true;
+        
+        if (seances.isEmpty()) {
+            seance_Html += "<div class=\"nav_date\">";
+            seance_Html += "<p>" + Seance.dateVersChaine(date) + "</p>"; // completer avec la récupération le la date actuelle
+            
+            seance_Html += "<a href=\"salle-" + sNom + "-" + Seance.dateVersChaine(Seance.lendemain(date)) + ".html\"><img src=\"imgs/right.png\" alt=\"rght\"></a>"; // accès à la page du jour suivant
+            seance_Html += "<a href=\"salle-" + sNom + "-" + Seance.dateVersChaine(aujourdhui) + ".html\" id=\"auj\">aujourd'hui</a>";
+            seance_Html += "</div>"; // fin class nav_salle
+            seance_Html += "<div class=\"horaire\">";
+            for (int i = 8; i <= 17; i++) {
+                seance_Html += "<div class=\"echelle\">";
+                seance_Html += "<p>" + i + ":00 </p>";
+                seance_Html += "<hr>";
+                seance_Html += "</div>"; // fin class echelle
+            }
+            seance_Html += "</div>"; // fin class horaires
+        }
         for (Seance s : seances) {
             String[] tab_Deb = Seance.dateVersHeure(s.dateDebut).split(":");
             String[] tab_Fin = Seance.dateVersHeure(s.dateFin).split(":");
             seance_Html += "<div class=\"salle\">";
-            seance_Html += "<div class=\"nav_date\">";
-            seance_Html += "<p>" + "date" + "</p>"; // completer avec la récupération le la date actuelle
-            seance_Html += "<a href=\"salle-" + "[[SALLE]]"+ "-" + "" + ".html\"><img src=\"imgs/right.png\" alt=\"rght\"></a>"; // accès à la page du jour suivant
-            seance_Html += "<a href=\"salle-" + "[[SALLE]]" + ".html\" id=\"auj\">aujourd'hui</a>";
-            seance_Html += "</div>"; // fin class nav_salle
+            if (cmp) {
+                seance_Html += "<div class=\"nav_date\">";
+                seance_Html += "<p>" + Seance.dateVersChaine(date) + "</p>";
+                seance_Html += "<a href=\"salle-" + sNom + "-" + Seance.dateVersChaine(Seance.veille(date)) + ".html\"><img src=\"imgs/left.png\" alt=\"r\"></a>";
+                seance_Html += "<a href=\"salle-" + sNom + "-" + Seance.dateVersChaine(Seance.lendemain(date)) + ".html\"><img src=\"imgs/right.png\" alt=\"rght\"></a>"; // accès à la page du jour suivant
+                seance_Html += "<a href=\"salle-" + sNom + "-" + Seance.dateVersChaine(aujourdhui) + ".html\" id=\"auj\">aujourd'hui</a>";
+                seance_Html += "</div>"; // fin class nav_salle
+            }
             seance_Html += "<div class=\"planning\">";
-            int top = (Integer.parseInt(tab_Deb[0])-8) * 10
-                    + ((Integer.parseInt(tab_Deb[1]))/10) + (Integer.parseInt(tab_Deb[0])-8);  //  placement séance 
+            int top = (Integer.parseInt(tab_Deb[0]) - 8) * 10
+                    + ((Integer.parseInt(tab_Deb[1])) / 10) + (Integer.parseInt(tab_Deb[0]) - 8);  //  placement séance 
             int height = (Integer.parseInt(tab_Fin[0]) - Integer.parseInt(tab_Deb[0])) * 10
                     + 10 + ((Integer.parseInt(tab_Deb[1]) - (60 - Integer.parseInt(tab_Fin[1]))) / 10); // taille de la séance en %
-            seance_Html += "<div class=\"seance\" style=\"top:" + top + "%; height:" + height + "%; background-color:#"+ s.couleur() +";\">"; // dessin des séances
+            seance_Html += "<div class=\"seance\" style=\"top:" + top + "%; height:" + height + "%; background-color:#" + s.couleur() + ";\">"; // dessin des séances
             seance_Html += "<h2>" + s.titre + "</h2>"; // ajouter le titre de la séance
             seance_Html += "<div class=\"description\">";
             seance_Html += "<p>" + s.description + "</p>"; // description de la séance import de la base
@@ -145,14 +166,17 @@ public class Generateur {
             seance_Html += "<p>" + Seance.dateVersHeure(s.dateDebut)
                     + "-->" + Seance.dateVersHeure(s.dateFin) + "</p>";
             seance_Html += "</div>"; // fin class seance
-            seance_Html += "<div class=\"horaire\">";
-            for (int i = 8; i <= 17; i++) {
-                seance_Html += "<div class=\"echelle\">";
-                seance_Html += "<p>" + i + ":00 </p>";
-                seance_Html += "<hr>";
-                seance_Html += "</div>"; // fin class echelle
+            if (cmp) {
+                cmp = false;
+                seance_Html += "<div class=\"horaire\">";
+                for (int i = 8; i <= 17; i++) {
+                    seance_Html += "<div class=\"echelle\">";
+                    seance_Html += "<p>" + i + ":00 </p>";
+                    seance_Html += "<hr>";
+                    seance_Html += "</div>"; // fin class echelle
+                }
+                seance_Html += "</div>"; // fin class horaires
             }
-            seance_Html += "</div>"; // fin class horaires
             seance_Html += "</div>"; // fin class planning
             seance_Html += "</div>";
         }
@@ -163,15 +187,27 @@ public class Generateur {
      * Génère les pages des salles
      */
     static void genererPagesSalles() {
+        Date jourSuivant = aujourdhui;
+        Date jourPrecedent = aujourdhui;
         for (Salle e : BaseDeDonnees.obtenirSalles()) {
-            if (!BaseDeDonnees.obtenirSeancesSalleDate(e.nom, aujourdhui).isEmpty()) {
-                valeursMotsCles.put("[[SEANCES]]", seancesVersHtmlFormate(BaseDeDonnees.obtenirSeancesSalleDate(e.nom, aujourdhui)));
-            } else {
-                valeursMotsCles.put("[[SEANCES]]", "<p> Pas de séances prévus pour aujourd'hui</p>");
-            }
             valeursMotsCles.put("[[SALLE]]", e.nom);
-            traiterTemplate("salle.html", "salle-" + e.nom + ".html");
-            valeursMotsCles.remove("[[SEANCES]]");
+            valeursMotsCles.put("[[DATE]]", seancesVersHtmlFormate(BaseDeDonnees.obtenirSeancesSalleDate(dossierSortie, jourSuivant), aujourdhui, e.nom));
+            traiterTemplate("salle.html", "salle-" + e.nom + "-" + Seance.dateVersChaine(aujourdhui) + ".html");
+            valeursMotsCles.remove("[[DATE]]");
+            for (int i = 0; i <= 10; i++) {
+                jourSuivant = Seance.lendemain(jourSuivant);
+                valeursMotsCles.put("[[DATE]]", seancesVersHtmlFormate(BaseDeDonnees.obtenirSeancesSalleDate(dossierSortie, jourSuivant), jourSuivant, e.nom));
+                traiterTemplate("salle.html", "salle-" + e.nom + "-" + Seance.dateVersChaine(jourSuivant) + ".html");
+                valeursMotsCles.remove("[[DATE]]");
+            }
+            for (int i = 0; i <= 10; i++) {
+                jourPrecedent = Seance.lendemain(jourPrecedent);
+                valeursMotsCles.put("[[DATE]]", seancesVersHtmlFormate(BaseDeDonnees.obtenirSeancesSalleDate(dossierSortie, jourPrecedent), jourPrecedent, e.nom));
+                traiterTemplate("salle.html", "salle-" + e.nom + "-" + Seance.dateVersChaine(jourPrecedent) + ".html");
+                valeursMotsCles.remove("[[DATE]]");
+            }
+            jourSuivant = aujourdhui;
+            jourPrecedent = aujourdhui;
         }
     }
 
